@@ -40,7 +40,7 @@ export default function DiscountProductsPage() {
             alt=""
           />
           <h1 className=" font-bold text-2xl text-center">
-            محبوب ترین محصولات
+            جشنواره پر تخفیف <span className="text-pink-300 text-3xl font-bold md:text-3xl " >Beautyland</span>
           </h1>
           <img
             className="md:ml-[560px]"
@@ -49,7 +49,7 @@ export default function DiscountProductsPage() {
           />
         </div>
 
-        <div className="bg-black w-full mt-10 rounded-4xl py-10 px-10 min-h-[400px]">
+        <div className="bg-pink-300 w-full mt-10 rounded-4xl py-10 px-10 min-h-[400px]">
           <div>
             <CountdownTimer />
           </div>
@@ -57,8 +57,8 @@ export default function DiscountProductsPage() {
             <div className="w-full flex justify-center items-center py-20">
               <div className="flex flex-col items-center">
                 {/* اسپینر گرد */}
-                <div className="w-12 h-12 border-4 border-pink-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-pink-600 text-lg animate-pulse">
+                <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p className="text-white text-lg animate-pulse">
                   در حال بارگذاری محصولات...
                 </p>
               </div>

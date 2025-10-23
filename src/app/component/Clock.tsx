@@ -21,26 +21,26 @@ export default function CountdownTimer() {
   const seconds = timeLeft % 60;
 
   return (
-    <div className="flex justify-center mb-4 items-center gap-4  p-6 rounded-xl text-white  mx-auto">
-  <div className="flex flex-col items-center bg-gray-800 px-4 py-2 rounded-lg">
+    <div className="flex justify-center mb-4 items-center gap-4  p-6 rounded-xl text-black  mx-auto">
+  <div className="flex flex-col items-center bg-white px-4 py-2 rounded-lg">
     <span className="text-xl font-bold">{seconds.toString().padStart(2, "0")}</span>
-    <span className="text-sm text-gray-400">ثانیه</span>
+    <span className="text-sm text-black">ثانیه</span>
     
   </div>
   :
-  <div className="flex flex-col items-center bg-gray-800 px-4 py-2 rounded-lg">
+  <div className="flex flex-col items-center bg-white px-4 py-2 rounded-lg">
     <span className="text-xl font-bold">{minutes.toString().padStart(2, "0")}</span>
-    <span className="text-sm text-gray-400">دقیقه</span>
+    <span className="text-sm text-black">دقیقه</span>
   </div>
   :
-  <div className="flex flex-col items-center bg-gray-800 px-4 py-2 rounded-lg">
+  <div className="flex flex-col items-center bg-white px-4 py-2 rounded-lg">
     <span className="text-xl font-bold">{hours.toString().padStart(2, "0")}</span>
-    <span className="text-sm text-gray-400">ساعت</span>
+    <span className="text-sm text-black">ساعت</span>
   </div>
   :
-  <div className="flex flex-col items-center bg-gray-800 px-4 py-2 rounded-lg">
+  <div className="flex flex-col items-center bg-white px-4 py-2 rounded-lg">
     <span className="text-xl font-bold">{days}</span>
-    <span className="text-sm text-gray-400">روز</span>
+    <span className="text-sm text-black">روز</span>
   </div>
 </div>
 
