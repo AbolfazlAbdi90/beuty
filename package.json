@@ -1,12 +1,12 @@
 {
-  "name": "beuty-land",
+  "name": "beauty-land",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.5",
