@@ -6,7 +6,7 @@ interface Ichildren {
 
 export default function Container({ children }: Ichildren) {
   return (
-    <div className='container mx-auto px-8 py-8'>
+    <div className='container mx-auto px-3 sm:px-8 py-8'>
       {children}
     </div>
   )

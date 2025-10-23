@@ -32,7 +32,7 @@ export default function Navbar() {
           <Link
             key={item.href}
             href={item.href}
-            className="relative pb-1 border-b-2 border-transparent hover:border-pink-500 transition-all duration-300"
+            className="relative pb-1 font-bold text-[20px] border-b-2 border-transparent hover:border-pink-500 transition-all duration-300"
           >
             {item.name}
           </Link>

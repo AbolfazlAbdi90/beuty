@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
-import Container from "./container";
+import Container from "../component/container";
 import Link from "next/link";
-import Search from "./search";
-import Navbar from "./navbar";
-import CartButton from "./AddtoCart";
-import Profile from "./profile";
+import Search from "../component/search";
+import Navbar from "../component/navbar";
+import CartButton from "../component/CartList";
+import Profile from "../component/profile";
 
 export default function Header() {
   return (

@@ -1,6 +1,8 @@
 import React from "react";
 import Container from "./component/container";
 import Link from "next/link";
+import Main from "./Main/main";
+
 
 export default function Home() {
   return (
@@ -31,6 +33,9 @@ export default function Home() {
 
           </Link>
         </div>
+
+        {/* logo for main beard */}
+        <Main />
       </div>
     </Container>
   );
