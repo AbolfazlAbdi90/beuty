@@ -1,4 +1,3 @@
-"use client"
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Cart from "@/app/component/addcart";
@@ -13,11 +12,9 @@ interface DiscountProduct {
 }
 
 async function getDiscountProduct(id: string): Promise<DiscountProduct | undefined> {
-  // ساخت URL کامل بر اساس محیط اجرا (Vercel یا local)
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  // fetch با مسیر relative به API داخلی
+  const res = await fetch(`${process.env.NEXTAUTH_URL || ""}/api/discountProducts`, { cache: "no-store" });
 
-  const res = await fetch(`${baseUrl}/api/discountProducts`, { cache: "no-store" });
   if (!res.ok) {
     console.error("Failed to fetch discount products");
     return undefined;
