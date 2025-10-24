@@ -2,18 +2,26 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Cart from "@/app/component/addcart";
 
-// نوع محصول
 interface DiscountProduct {
   id: number;
   title: string;
+  image: string;
   price: number;
   discount: number;
-  image: string;
   description: string;
 }
 
 async function getDiscountProduct(id: string): Promise<DiscountProduct | undefined> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/discountProducts`, { cache: "no-store" });
+  // ساخت URL کامل بر اساس محیط اجرا (Vercel یا local)
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
+  const res = await fetch(`${baseUrl}/api/discountProducts`, { cache: "no-store" });
+  if (!res.ok) {
+    console.error("Failed to fetch discount products");
+    return undefined;
+  }
+
   const products: DiscountProduct[] = await res.json();
   return products.find((p) => p.id === Number(id));
 }
@@ -35,7 +43,7 @@ export default async function DiscountProductPage({ params }: { params: { id: st
             alt={product.title}
             width={600}
             height={600}
-            className="w-full h-64 md:h-full"
+            className="w-full h-64 md:h-full object-cover"
           />
         </div>
 
