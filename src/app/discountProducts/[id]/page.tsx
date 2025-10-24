@@ -2,16 +2,24 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Cart from "@/app/component/addcart";
 
-async function getDiscountProduct(id: string) {
+// نوع محصول
+interface DiscountProduct {
+  id: number;
+  title: string;
+  price: number;
+  discount: number;
+  image: string;
+  description: string;
+}
+
+async function getDiscountProduct(id: string): Promise<DiscountProduct | undefined> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/discountProducts`, { cache: "no-store" });
-  const products = await res.json();
-  return products.find((p: any) => p.id === Number(id));
+  const products: DiscountProduct[] = await res.json();
+  return products.find((p) => p.id === Number(id));
 }
 
 export default async function DiscountProductPage({ params }: { params: { id: string } }) {
-  const res = await fetch("http://localhost:3000/api/discountProducts", { cache: "no-store" });
-  const products = await res.json();
-  const product = products.find((p: any) => p.id === Number(params.id));
+  const product = await getDiscountProduct(params.id);
 
   if (!product) return notFound();
 
