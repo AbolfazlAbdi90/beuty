@@ -5,6 +5,7 @@ import ProductsPage from "../famousProducts/page";
 import DiscountProductsPage from "../discountProducts/page";
 import OurDeatails from "../component/ourDeatails";
 import AddresInstagram from "../component/Addres";
+import Founders from "../component/founder";
 
 export default function Main() {
   return (
@@ -67,27 +68,24 @@ export default function Main() {
         {/* محصولات با تخفیف */}
       </div>
       <DiscountProductsPage />
-<div className="flex flex-col md:flex-row justify-start items-center mt-20 md:ml-10">
-  {/* عکس */}
-  <div className="flex justify-center md:justify-start">
-    <img
-      src="/image/image-in-main/Strawberries.png"
-      alt=""
-     
-    />
-  </div>
+      <div className="flex flex-col md:flex-row justify-start items-center mt-20 md:ml-10">
+        {/* عکس */}
+        <div className="flex justify-center md:justify-start">
+          <img src="/image/image-in-main/Strawberries.png" alt="" />
+        </div>
 
-  {/* متن */}
-  <div className="flex flex-col justify-center items-center md:items-start text-center md:text-right md:ml-4">
-    <h1 className="text-[20px] md:text-[28px] font-semibold">
-      چرا <span className="text-[#FF6687]">Beautyland</span> بهترین انتخاب شماست؟
-    </h1>
-  </div>
-</div>
+        {/* متن */}
+        <div className="flex flex-col justify-center items-center md:items-start text-center md:text-right md:ml-4">
+          <h1 className="text-[20px] md:text-[28px] font-semibold">
+            چرا <span className="text-[#FF6687]">Beautyland</span> بهترین انتخاب
+            شماست؟
+          </h1>
+        </div>
+      </div>
 
-<OurDeatails />
-<AddresInstagram />
-
+      <OurDeatails />
+      <AddresInstagram />
+      <Founders />
     </Container>
   );
 }
