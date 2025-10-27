@@ -6,6 +6,9 @@ import DiscountProductsPage from "../discountProducts/page";
 import OurDeatails from "../component/ourDeatails";
 import AddresInstagram from "../component/Addres";
 import Founders from "../component/founder";
+import ArticlesPage from "../educationArticls/page";
+import ArticlePage from "../educationArticls/[id]/page";
+
 
 export default function Main() {
   return (
@@ -86,6 +89,24 @@ export default function Main() {
       <OurDeatails />
       <AddresInstagram />
       <Founders />
+       <div className="flex items-center justify-between w-full px-4 mt-16  ">
+          <img
+            className="md:mr-[560px]"
+            src="/image/image-in-main/logo-inside-container/Vector 7.png"
+            alt=""
+          />
+          <h1 className=" font-bold text-2xl text-center">
+            
+           مقالات آموزشی
+            <span className="text-[#FF6687]">Beautyland</span>
+          </h1>
+          <img
+            className="md:ml-[560px]"
+            src="/image/image-in-main/logo-inside-container/Vector 8.png"
+            alt=""
+          />
+        </div>
+      <ArticlesPage />
     </Container>
   );
 }
