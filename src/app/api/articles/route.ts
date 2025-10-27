@@ -91,7 +91,7 @@ const articles: Article[] = [
   { 
     id: 14, 
     title: "ترفندهای آرایش لب", 
-    image: "/image/articls/bb6750c63d7158b2c765cce64b09bf1c3c4a2e.png", 
+    image: "/image/articls/bb6750c63d7158b2c765cce64b09bf6f1c3c4a2e.png", 
     content: "استفاده از بالم لب قبل از رژ، انتخاب رنگ مناسب و لایه‌بندی درست باعث جلوه زیبا و ماندگار لب‌ها می‌شود. همچنین استفاده از مداد لب برای فرم‌دهی بهتر ضروری است." 
   },
   { 

@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "./Header/header";
 import ReactQueryProvider from "./ReactQueryProvider";
 import { Inter } from "next/font/google";
+import { ThemeProvider } from "./component/Context";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,7 +25,10 @@ export default function RootLayout({
       <body className={`${inter.variable} antialiased`}>
         <ReactQueryProvider>
           <Header />
-          {children}
+           <ThemeProvider>
+            {children}
+           </ThemeProvider>
+          
         </ReactQueryProvider>
       </body>
     </html>

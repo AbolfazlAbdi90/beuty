@@ -1,8 +1,10 @@
 "use client";
 
+import Container from "@/app/component/container";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useParams } from "next/navigation";
+import ArticlesPage from "../page";
 
 interface Article {
   id: number;
@@ -23,17 +25,28 @@ export default function ArticleDetailPage() {
   const params = useParams();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
-  const { data: article, isLoading, isError } = useQuery({
+  const {
+    data: article,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["article", id],
     queryFn: () => fetchArticle(id),
   });
 
   if (isLoading)
-    return <p className="text-center py-20 text-gray-500">در حال بارگذاری...</p>;
+    return (
+      <p className="text-center py-20 text-gray-500">در حال بارگذاری...</p>
+    );
   if (isError || !article)
-    return <p className="text-center py-20 text-gray-500">مقاله مورد نظر پیدا نشد 😔</p>;
+    return (
+      <p className="text-center py-20 text-gray-500">
+        مقاله مورد نظر پیدا نشد 😔
+      </p>
+    );
 
   return (
+    <Container>
     <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
       {/* عکس */}
       <div className="md:col-span-5 w-full h-64 md:h-[400px] relative rounded-2xl overflow-hidden shadow-xl">
@@ -60,6 +73,13 @@ export default function ArticleDetailPage() {
           {article.content}
         </p>
       </div>
+      
     </div>
-  );
+    <div className="flex gap-4 mr-46 mt-12 " >
+        <img src="/image/articls/articls.png" alt="articls"></img>
+        <h2 className="font-bold text-2xl" >همه مقالات</h2>
+      </div>
+      <ArticlesPage />
+    </Container>
+  )
 }
