@@ -2,6 +2,7 @@
 import React from "react";
 import Container from "../component/container";
 import Link from "next/link";
+import Image from "next/image";
 import Search from "../component/search";
 import Navbar from "../component/navbar";
 import CartButton from "../component/CartList";
@@ -19,10 +20,12 @@ export default function Header() {
           {/* لوگو وسط */}
           <div className="flex-1 flex justify-center">
             <Link href="/">
-              <img
-                className="w-24 h-20 rounded-2xl"
+              <Image
                 src="/image/logo-in-website/ChatGPT Image Sep 28, 2025, 05_03_22 AM.png"
                 alt="logo-in-website"
+                width={96}
+                height={80}
+                className="rounded-2xl"
               />
             </Link>
           </div>
@@ -43,10 +46,12 @@ export default function Header() {
           {/* Logo + Search سمت چپ */}
           <div className="flex items-center gap-4">
             <Link href="/">
-              <img
-                className="w-30 h-24 rounded-2xl"
+              <Image
                 src="/image/logo-in-website/ChatGPT Image Sep 28, 2025, 05_03_22 AM.png"
                 alt="logo-in-website"
+                width={120}
+                height={96}
+                className="rounded-2xl"
               />
             </Link>
             <Search />
