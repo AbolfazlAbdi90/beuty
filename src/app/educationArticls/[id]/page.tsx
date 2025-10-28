@@ -75,7 +75,7 @@ export default function ArticleDetailPage() {
       </div>
       
     </div>
-    <div className="flex gap-4 mr-46 mt-12 " >
+    <div className="flex gap-4 mr-6 md:mr-46 mt-12 " >
         <img src="/image/articls/articls.png" alt="articls"></img>
         <h2 className="font-bold text-2xl" >همه مقالات</h2>
       </div>
