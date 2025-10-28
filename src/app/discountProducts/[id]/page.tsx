@@ -14,12 +14,9 @@ interface DiscountProduct {
 }
 
 async function fetchProduct(id: string): Promise<DiscountProduct> {
-  const res = await fetch("/api/discountProducts");
-  if (!res.ok) throw new Error("Failed to fetch products");
-
-  const products: DiscountProduct[] = (await res.json()) as DiscountProduct[];
+  const res = await fetch(`/api/discountProducts`);
+  const products: DiscountProduct[] = await res.json();
   const product = products.find((p) => p.id === Number(id));
-
   if (!product) throw new Error("Product not found");
   return product;
 }
