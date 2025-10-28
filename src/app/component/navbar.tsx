@@ -14,7 +14,7 @@ export default function Navbar() {
     { name: "ورود , ثبته نام", href: "/login" },
     { name: "درباره ما", href: "/about" },
     { name: "پروفایل", href: "/Profile" },
-    { name: "فروشگاه", href: "/shop" },
+    { name: "فروشگاه", href: "/Product" },
   ];
 
   return (
