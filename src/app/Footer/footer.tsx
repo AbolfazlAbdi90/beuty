@@ -80,7 +80,7 @@ export default function Footer() {
       <div className="bg-[#FF6687] h-[94px] w-full rounded-b-[32px]">
         <div className="grid grid-cols-1 md:flex md:flex-row-reverse md:justify-between items-center px-8 h-full">
           {/* آیکون‌ها */}
-          <div className="flex justify-center md:justify-start gap-4">
+          <div className="flex justify-center md:justify-start gap-1">
             <a
               href="https://t.me/bea_utylanddd"
               target="_blank"

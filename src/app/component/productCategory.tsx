@@ -1,4 +1,4 @@
-import DataProductCategoru from "../Main/dataProductCategoru";
+import DataProductCategoru from "../ProductCategory/dataProductCategoru";
 
 export default function ProductCategoryBox() {
   return (
