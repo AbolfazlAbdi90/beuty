@@ -19,7 +19,7 @@ interface DiscountProduct {
   description: string;
 }
 
-export default function DiscountProductsPage() {
+export default function DiscountProductsPage(): JSX.Element {
   const [products, setProducts] = useState<DiscountProduct[]>([]);
   const [loading, setLoading] = useState(true);
 

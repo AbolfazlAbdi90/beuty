@@ -16,13 +16,23 @@ interface DiscountProduct {
 async function fetchProduct(id: string): Promise<DiscountProduct> {
   const res = await fetch(`/api/discountProducts`);
   if (!res.ok) throw new Error("Failed to fetch products");
+
   const products: DiscountProduct[] = await res.json();
   const product = products.find((p) => p.id === Number(id));
+
   if (!product) throw new Error("Product not found");
   return product;
 }
 
-export default function DiscountProductPage({ params }: { params: { id: string } }) {
+interface DiscountProductPageProps {
+  params: {
+    id: string;
+  };
+}
+
+export default function DiscountProductPage({
+  params,
+}: DiscountProductPageProps): JSX.Element {
   const { data: product, isLoading, error } = useQuery<DiscountProduct, Error>({
     queryKey: ["product", params.id],
     queryFn: () => fetchProduct(params.id),
