@@ -3,7 +3,6 @@ import Container from "./component/container";
 import Link from "next/link";
 import Main from "./Main/main";
 
-
 export default function Home() {
   return (
     <Container>
@@ -29,8 +28,9 @@ export default function Home() {
 
         <div className="flex justify-center">
           <Link href="/Product">
-                    <button className="w-[250px] cursor-pointer bg-[#FF6687] rounded-[43px] mt-6 text-white h-10">مشاهده محصولات</button>
-
+            <button className="w-[250px] cursor-pointer bg-[#FF6687] rounded-[43px] mt-6 text-white h-10">
+              مشاهده محصولات
+            </button>
           </Link>
         </div>
 
