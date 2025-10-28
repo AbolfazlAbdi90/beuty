@@ -26,41 +26,42 @@ export default function DiscountProductsPage() {
   useEffect(() => {
     fetch("/api/discountProducts")
       .then((res) => res.json())
-      .then((data) => setProducts(data))
+      .then((data: DiscountProduct[]) => setProducts(data)) // نوع‌دهی دقیق
       .finally(() => setLoading(false));
   }, []);
 
   return (
     <div className="w-full">
       <div className="mt-20 p-0">
-        <div className="flex items-center justify-between w-full px-4 mt-16   ">
-          <img
+        <div className="flex items-center justify-between w-full px-4 mt-16">
+          <Image
             className="md:mr-[560px]"
             src="/image/image-in-main/logo-inside-container/Vector 7.png"
-            alt=""
+            alt="Vector 7"
+            width={50}
+            height={50}
           />
-          <h1 className=" font-bold text-2xl text-center">
-            جشنواره پر تخفیف <span className="text-pink-300 text-3xl font-bold md:text-3xl " >Beautyland</span>
+          <h1 className="font-bold text-2xl text-center">
+            جشنواره پر تخفیف{" "}
+            <span className="text-pink-300 text-3xl font-bold md:text-3xl">Beautyland</span>
           </h1>
-          <img
+          <Image
             className="md:ml-[560px]"
             src="/image/image-in-main/logo-inside-container/Vector 8.png"
-            alt=""
+            alt="Vector 8"
+            width={50}
+            height={50}
           />
         </div>
 
         <div className="bg-pink-300 w-full mt-10 rounded-4xl py-10 px-10 min-h-[400px]">
-          <div>
-            <CountdownTimer />
-          </div>
+          <CountdownTimer />
+
           {loading ? (
             <div className="w-full flex justify-center items-center py-20">
               <div className="flex flex-col items-center">
-                {/* اسپینر گرد */}
                 <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-white text-lg animate-pulse">
-                  در حال بارگذاری محصولات...
-                </p>
+                <p className="text-white text-lg animate-pulse">در حال بارگذاری محصولات...</p>
               </div>
             </div>
           ) : (
@@ -77,22 +78,10 @@ export default function DiscountProductsPage() {
                       <Image src={p.image} alt={p.title} fill />
                     </div>
                     <div className="p-4 flex flex-col items-center">
-                      <h2 className="font-bold text-lg text-gray-800">
-                        {p.title}
-                      </h2>
-                      <p className="text-gray-400 line-through text-sm mt-1">
-                        {p.price.toLocaleString("fa-IR")} تومان
-                      </p>
-                      <p className="text-pink-600 font-semibold mt-1">
-                        {(
-                          p.price -
-                          (p.price * p.discount) / 100
-                        ).toLocaleString("fa-IR")}{" "}
-                        تومان
-                      </p>
-                      <p className="text-green-600 text-sm mt-1">
-                        {p.discount}% تخفیف
-                      </p>
+                      <h2 className="font-bold text-lg text-gray-800">{p.title}</h2>
+                      <p className="text-gray-400 line-through text-sm mt-1">{p.price.toLocaleString("fa-IR")} تومان</p>
+                      <p className="text-pink-600 font-semibold mt-1">{(p.price - (p.price * p.discount) / 100).toLocaleString("fa-IR")} تومان</p>
+                      <p className="text-green-600 text-sm mt-1">{p.discount}% تخفیف</p>
                     </div>
                   </Link>
                 ))}
@@ -100,13 +89,7 @@ export default function DiscountProductsPage() {
 
               {/* موبایل */}
               <div className="md:hidden">
-                <Swiper
-                  modules={[Navigation, Pagination]}
-                  spaceBetween={16}
-                  slidesPerView={1}
-                  navigation
-                  pagination={{ clickable: true }}
-                >
+                <Swiper modules={[Navigation, Pagination]} spaceBetween={16} slidesPerView={1} navigation pagination={{ clickable: true }}>
                   {products.map((p) => (
                     <SwiperSlide key={p.id}>
                       <Link
@@ -117,22 +100,10 @@ export default function DiscountProductsPage() {
                           <Image src={p.image} alt={p.title} fill />
                         </div>
                         <div className="p-4 text-center">
-                          <h2 className="font-bold text-lg text-gray-800">
-                            {p.title}
-                          </h2>
-                          <p className="text-gray-400 line-through text-sm mt-1">
-                            {p.price.toLocaleString("fa-IR")} تومان
-                          </p>
-                          <p className="text-pink-600 font-semibold mt-1">
-                            {(
-                              p.price -
-                              (p.price * p.discount) / 100
-                            ).toLocaleString("fa-IR")}{" "}
-                            تومان
-                          </p>
-                          <p className="text-green-600 text-sm mt-1">
-                            {p.discount}% تخفیف
-                          </p>
+                          <h2 className="font-bold text-lg text-gray-800">{p.title}</h2>
+                          <p className="text-gray-400 line-through text-sm mt-1">{p.price.toLocaleString("fa-IR")} تومان</p>
+                          <p className="text-pink-600 font-semibold mt-1">{(p.price - (p.price * p.discount) / 100).toLocaleString("fa-IR")} تومان</p>
+                          <p className="text-green-600 text-sm mt-1">{p.discount}% تخفیف</p>
                         </div>
                       </Link>
                     </SwiperSlide>

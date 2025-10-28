@@ -14,15 +14,18 @@ interface DiscountProduct {
 }
 
 async function fetchProduct(id: string): Promise<DiscountProduct> {
-  const res = await fetch(`/api/discountProducts`);
-  const products: DiscountProduct[] = await res.json();
+  const res = await fetch("/api/discountProducts");
+  if (!res.ok) throw new Error("Failed to fetch products");
+
+  const products: DiscountProduct[] = (await res.json()) as DiscountProduct[];
   const product = products.find((p) => p.id === Number(id));
+
   if (!product) throw new Error("Product not found");
   return product;
 }
 
 export default function DiscountProductPage({ params }: { params: { id: string } }) {
-  const { data: product, isLoading, error } = useQuery({
+  const { data: product, isLoading, error } = useQuery<DiscountProduct, Error>({
     queryKey: ["product", params.id],
     queryFn: () => fetchProduct(params.id),
   });
@@ -36,7 +39,13 @@ export default function DiscountProductPage({ params }: { params: { id: string }
     <div className="flex items-center justify-center p-6">
       <div className="bg-white rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-12 max-w-4xl w-full overflow-hidden">
         <div className="md:col-span-5 flex justify-center items-center bg-gray-100">
-          <Image src={product.image} alt={product.title} width={600} height={600} className="w-full h-64 md:h-full object-cover" />
+          <Image
+            src={product.image}
+            alt={product.title}
+            width={600}
+            height={600}
+            className="w-full h-64 md:h-full object-cover"
+          />
         </div>
         <div className="md:col-span-7 p-6 flex flex-col justify-center text-center md:text-right">
           <h1 className="text-2xl font-bold text-gray-800">{product.title}</h1>
