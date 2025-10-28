@@ -33,7 +33,11 @@ interface DiscountProductPageProps {
 export default function DiscountProductPage({
   params,
 }: DiscountProductPageProps): JSX.Element {
-  const { data: product, isLoading, error } = useQuery<DiscountProduct, Error>({
+  const {
+    data: product,
+    isLoading,
+    error,
+  } = useQuery<DiscountProduct, Error>({
     queryKey: ["product", params.id],
     queryFn: () => fetchProduct(params.id),
   });
@@ -41,7 +45,8 @@ export default function DiscountProductPage({
   if (isLoading) return <p>Loading...</p>;
   if (error || !product) return <p>{error?.message || "Product not found"}</p>;
 
-  const discountedPrice = product.price - (product.price * product.discount) / 100;
+  const discountedPrice =
+    product.price - (product.price * product.discount) / 100;
 
   return (
     <div className="flex items-center justify-center p-6">
@@ -63,8 +68,12 @@ export default function DiscountProductPage({
           <p className="text-pink-600 text-2xl font-semibold mt-1">
             {discountedPrice.toLocaleString("fa-IR")} تومان
           </p>
-          <p className="text-green-600 font-bold mt-1">{product.discount}% تخفیف</p>
-          <p className="text-gray-600 text-sm mt-4 leading-relaxed">{product.description}</p>
+          <p className="text-green-600 font-bold mt-1">
+            {product.discount}% تخفیف
+          </p>
+          <p className="text-gray-600 text-sm mt-4 leading-relaxed">
+            {product.description}
+          </p>
           <Cart />
         </div>
       </div>
