@@ -15,6 +15,7 @@ interface DiscountProduct {
 
 async function fetchProduct(id: string): Promise<DiscountProduct> {
   const res = await fetch(`/api/discountProducts`);
+  if (!res.ok) throw new Error("Failed to fetch products");
   const products: DiscountProduct[] = await res.json();
   const product = products.find((p) => p.id === Number(id));
   if (!product) throw new Error("Product not found");
@@ -28,7 +29,7 @@ export default function DiscountProductPage({ params }: { params: { id: string }
   });
 
   if (isLoading) return <p>Loading...</p>;
-  if (error || !product) return <p>Product not found</p>;
+  if (error || !product) return <p>{error?.message || "Product not found"}</p>;
 
   const discountedPrice = product.price - (product.price * product.discount) / 100;
 
@@ -46,8 +47,12 @@ export default function DiscountProductPage({ params }: { params: { id: string }
         </div>
         <div className="md:col-span-7 p-6 flex flex-col justify-center text-center md:text-right">
           <h1 className="text-2xl font-bold text-gray-800">{product.title}</h1>
-          <p className="text-gray-500 line-through mt-2">{product.price.toLocaleString("fa-IR")} تومان</p>
-          <p className="text-pink-600 text-2xl font-semibold mt-1">{discountedPrice.toLocaleString("fa-IR")} تومان</p>
+          <p className="text-gray-500 line-through mt-2">
+            {product.price.toLocaleString("fa-IR")} تومان
+          </p>
+          <p className="text-pink-600 text-2xl font-semibold mt-1">
+            {discountedPrice.toLocaleString("fa-IR")} تومان
+          </p>
           <p className="text-green-600 font-bold mt-1">{product.discount}% تخفیف</p>
           <p className="text-gray-600 text-sm mt-4 leading-relaxed">{product.description}</p>
           <Cart />

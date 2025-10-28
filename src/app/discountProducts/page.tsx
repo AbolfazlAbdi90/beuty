@@ -21,34 +21,48 @@ interface DiscountProduct {
 
 export default function DiscountProductsPage() {
   const [products, setProducts] = useState<DiscountProduct[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/discountProducts")
-      .then((res) => res.json())
-      .then((data: DiscountProduct[]) => setProducts(data))
-      .finally(() => setLoading(false));
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("/api/discountProducts");
+        if (!res.ok) throw new Error("Failed to fetch products");
+        const data: DiscountProduct[] = await res.json();
+        setProducts(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   return (
     <div className="w-full">
       <div className="mt-20 p-0">
         <div className="flex items-center justify-between w-full px-4 mt-16">
-          <img
-            className="md:mr-[560px]"
+          <Image
             src="/image/image-in-main/logo-inside-container/Vector 7.png"
-            alt=""
+            alt="Logo Left"
+            width={50}
+            height={50}
+            className="md:mr-[560px]"
           />
-          <h1 className=" font-bold text-2xl text-center">
+          <h1 className="font-bold text-2xl text-center">
             جشنواره پر تخفیف{" "}
             <span className="text-pink-300 text-3xl font-bold md:text-3xl">
               Beautyland
             </span>
           </h1>
-          <img
-            className="md:ml-[560px]"
+          <Image
             src="/image/image-in-main/logo-inside-container/Vector 8.png"
-            alt=""
+            alt="Logo Right"
+            width={50}
+            height={50}
+            className="md:ml-[560px]"
           />
         </div>
 
