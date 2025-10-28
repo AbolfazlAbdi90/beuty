@@ -1,6 +1,7 @@
 "use client";
 
 import Cart from "@/app/component/addcart";
+import Container from "@/app/component/container";
 import ProductCategoryBox from "@/app/component/productCategory";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
@@ -33,7 +34,8 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     return <p className="text-red-500 text-center mt-20">محصول پیدا نشد</p>;
 
   return (
-    <div className="flex flex-col items-center justify-center p-6">
+ <Container>
+     <div className="flex flex-col items-center justify-center p-6">
       {/* کارت محصول */}
       <div className="bg-white rounded-2xl shadow-lg w-full max-w-2xl overflow-hidden md:max-w-5xl md:grid md:grid-cols-12">
         {/* تصویر سمت چپ در دسکتاپ */}
@@ -60,11 +62,29 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           </div>
         </div>
       </div>
-
+    
       {/* باکس دسته‌بندی پایین صفحه */}
       <div className="mt-60 w-full">
         <ProductCategoryBox />
       </div>
+          <div className="flex items-center justify-between w-full px-4 mt-16">
+                <Image
+                  className="md:mr-[560px]"
+                  src="/image/image-in-main/logo-inside-container/Vector 7.png"
+                  alt=""
+                  width={50}
+                  height={50}
+                />
+                <h1 className="font-bold text-pink-600 text-2xl text-center">BeautyLand</h1>
+                <Image
+                  className="md:ml-[560px]"
+                  src="/image/image-in-main/logo-inside-container/Vector 8.png"
+                  alt=""
+                  width={50}
+                  height={50}
+                />
+              </div>
     </div>
+ </Container>
   );
 }

@@ -60,6 +60,23 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         </div>
         <FamousProductsPage />
       </div>
+          <div className="flex items-center justify-between w-full px-4 mt-16">
+                <Image
+                  className="md:mr-[560px]"
+                  src="/image/image-in-main/logo-inside-container/Vector 7.png"
+                  alt=""
+                  width={50}
+                  height={50}
+                />
+                <h1 className="font-bold text-pink-600 text-2xl text-center">BeautyLand</h1>
+                <Image
+                  className="md:ml-[560px]"
+                  src="/image/image-in-main/logo-inside-container/Vector 8.png"
+                  alt=""
+                  width={50}
+                  height={50}
+                />
+              </div>
     </>
   );
 }
