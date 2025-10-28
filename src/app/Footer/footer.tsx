@@ -18,12 +18,15 @@ export default function Footer() {
       <div className="w-full text-white md:h-[400px] bg-[#30303D] mx-auto rounded-t-[32px] flex flex-col items-center py-8 gap-4">
         {/* بخش لوگو و توضیح */}
         <div className="text-center">
-          <Image
+          <div className="flex justify-center" >
+            <Image
             src="/image/logo-in-website/ChatGPT Image Sep 28, 2025, 05_03_22 AM.png"
             alt="logo-in-website"
             width={120}
             height={96}
+          className="rounded-2xl"
           />
+          </div>
           <p className="text-center mt-2 text-gray-300 max-w-md mx-auto text-sm leading-6">
             لورم ایپسوم متن ساختگی برای طراحان می‌باشد که با استفاده از آن متن تستی می‌نویسند!
           </p>
@@ -104,7 +107,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <h1>hello world</h1>
+     
     </Container>
   );
 }
