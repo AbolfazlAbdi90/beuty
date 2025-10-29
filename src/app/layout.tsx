@@ -2,14 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "./Header/header";
 import ReactQueryProvider from "./ReactQueryProvider";
-import { Inter } from "next/font/google";
-
 import Footer from "./Footer/footer";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
 
 export const metadata: Metadata = {
   title: "Beauty Land",
@@ -23,12 +16,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased`}>
+      <body className="antialiased" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
         <ReactQueryProvider>
           <Header />
-          
-            {children}
-          
+          {children}
           <Footer />
         </ReactQueryProvider>
       </body>
