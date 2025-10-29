@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 
 interface Review {
   id: string;
-  productId: number;
   userId: string;
   name: string;
   text: string;
@@ -23,68 +22,123 @@ export default function Reviews({ productId, currentUserId }: ReviewsProps) {
   const [text, setText] = useState("");
   const [replyId, setReplyId] = useState<string | null>(null);
 
+  // بارگذاری نظرات
   const fetchReviews = async () => {
-    const res = await fetch(`/api/review?productId=${productId}`);
-    const data: Review[] = await res.json();
-    setReviews(data);
+    try {
+      const res = await fetch(`/api/review?productId=${productId}`);
+      if (!res.ok) throw new Error("خطا در دریافت نظرات");
+      const data: Review[] = await res.json();
+      setReviews(data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
     fetchReviews();
   }, [productId]);
 
+  // ثبت نظر یا پاسخ
   const handleSubmit = async (parentId?: string) => {
     if (!name || !text) return;
 
-    const res = await fetch("/api/review", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ productId, userId: currentUserId, name, text, parentId }),
-    });
+    try {
+      const res = await fetch("/api/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId,
+          userId: currentUserId,
+          name,
+          text,
+          parentId,
+        }),
+      });
+      if (!res.ok) throw new Error("خطا در ثبت نظر");
 
-    const newReview: Review = await res.json();
+      const newReview: Review = await res.json();
 
-    if (parentId) {
-      setReviews(prev =>
-        prev.map(r =>
-          r.id === parentId ? { ...r, replies: [newReview, ...r.replies] } : r
-        )
-      );
-      setReplyId(null);
-    } else {
-      setReviews(prev => [newReview, ...prev]);
+      if (parentId) {
+        setReviews(prev =>
+          prev.map(r =>
+            r.id === parentId ? { ...r, replies: [newReview, ...r.replies] } : r
+          )
+        );
+        setReplyId(null);
+      } else {
+        setReviews(prev => [newReview, ...prev]);
+      }
+
+      setName("");
+      setText("");
+    } catch (err) {
+      console.error(err);
+      alert("خطا در ثبت نظر");
     }
-
-    setName("");
-    setText("");
   };
 
-  const handleLike = async (id: string, parentId?: string) => {
-    await fetch("/api/review", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, userId: currentUserId, parentId }),
-    });
-
-    fetchReviews(); // بعد از لایک مجدد کلاینت آپدیت می‌شود
-  };
-
+  // حذف نظر (فقط برای صاحب نظر)
   const handleDelete = async (id: string, parentId?: string, ownerId?: string) => {
-    if (ownerId !== currentUserId) return; // فقط صاحب نظر می‌تواند حذف کند
-    // می‌توانی بعداً DELETE API اضافه کنی
-    if (parentId) {
-      setReviews(prev =>
-        prev.map(r =>
-          r.id === parentId
-            ? { ...r, replies: r.replies.filter(rep => rep.id !== id) }
-            : r
-        )
-      );
-    } else {
-      setReviews(prev => prev.filter(r => r.id !== id));
+    if (ownerId !== currentUserId) return;
+
+    try {
+      const res = await fetch("/api/review", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviewId: id, userId: currentUserId, parentId }),
+      });
+      if (!res.ok) throw new Error("خطا در حذف نظر");
+
+      if (parentId) {
+        setReviews(prev =>
+          prev.map(r =>
+            r.id === parentId
+              ? { ...r, replies: r.replies.filter(rep => rep.id !== id) }
+              : r
+          )
+        );
+      } else {
+        setReviews(prev => prev.filter(r => r.id !== id));
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
+  // لایک / آنلایک
+  const handleLike = async (id: string, parentId?: string) => {
+    try {
+      const res = await fetch("/api/review/like", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviewId: id, userId: currentUserId, parentId }),
+      });
+      if (!res.ok) throw new Error("خطا در لایک");
+
+      const updatedReview: Review = await res.json();
+
+      if (parentId) {
+        setReviews(prev =>
+          prev.map(r =>
+            r.id === parentId
+              ? {
+                  ...r,
+                  replies: r.replies.map(rep =>
+                    rep.id === id ? updatedReview : rep
+                  ),
+                }
+              : r
+          )
+        );
+      } else {
+        setReviews(prev => prev.map(r => (r.id === id ? updatedReview : r)));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // رندر کامنت‌ها
   const renderReview = (r: Review, level = 0, parentId?: string) => (
     <div
       key={r.id}
@@ -95,8 +149,8 @@ export default function Reviews({ productId, currentUserId }: ReviewsProps) {
         <strong>{r.name}</strong>
         {r.userId === currentUserId && (
           <button
-            className="text-red-500 text-xs hover:underline"
             onClick={() => handleDelete(r.id, parentId, r.userId)}
+            className="text-red-500 text-xs hover:underline"
           >
             حذف
           </button>

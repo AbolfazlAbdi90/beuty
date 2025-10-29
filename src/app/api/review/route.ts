@@ -11,26 +11,26 @@ interface Review {
   replies: Review[];
 }
 
-// ذخیره‌سازی موقت (می‌تونی بعداً DB بزاری)
+// ذخیره موقت
 let reviews: Review[] = [];
 
+// GET نظرات
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const productId = url.searchParams.get("productId");
-
-  if (!productId) return NextResponse.json([], { status: 200 });
-
-  const productReviews = reviews.filter(r => r.productId.toString() === productId);
+  const productReviews = reviews.filter(r => r.productId === Number(productId));
   return NextResponse.json(productReviews);
 }
 
+// POST ثبت نظر یا پاسخ
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { productId, userId, name, text, parentId } = body;
 
-    if (!productId || !userId || !name || !text)
+    if (!productId || !userId || !name || !text) {
       return NextResponse.json({ error: "فیلدها ناقص است" }, { status: 400 });
+    }
 
     const newReview: Review = {
       id: crypto.randomUUID(),
@@ -53,46 +53,64 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(newReview, { status: 201 });
   } catch (err) {
-    console.error(err);
     return NextResponse.json({ error: "خطا در ثبت نظر" }, { status: 500 });
   }
 }
 
-// برای لایک و آنلایک
-export async function PUT(req: NextRequest) {
+// DELETE حذف (فقط صاحب نظر)
+export async function DELETE(req: NextRequest) {
   try {
     const body = await req.json();
-    const { id, userId, parentId } = body;
+    const { reviewId, userId, parentId } = body;
 
-    reviews = reviews.map(r => {
-      if (parentId && r.id === parentId) {
-        return {
-          ...r,
-          replies: r.replies.map(rep =>
-            rep.id === id
-              ? {
-                  ...rep,
-                  likes: rep.likes.includes(userId)
-                    ? rep.likes.filter(u => u !== userId)
-                    : [...rep.likes, userId],
-                }
-              : rep
-          ),
-        };
-      } else if (!parentId && r.id === id) {
-        return {
-          ...r,
-          likes: r.likes.includes(userId)
-            ? r.likes.filter(u => u !== userId)
-            : [...r.likes, userId],
-        };
-      }
-      return r;
-    });
+    const target = parentId
+      ? reviews.find(r => r.id === parentId)?.replies.find(rep => rep.id === reviewId)
+      : reviews.find(r => r.id === reviewId);
+
+    if (!target || target.userId !== userId) {
+      return NextResponse.json({ error: "شما اجازه حذف این نظر را ندارید" }, { status: 403 });
+    }
+
+    if (parentId) {
+      reviews = reviews.map(r =>
+        r.id === parentId
+          ? { ...r, replies: r.replies.filter(rep => rep.id !== reviewId) }
+          : r
+      );
+    } else {
+      reviews = reviews.filter(r => r.id !== reviewId);
+    }
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error(err);
+    return NextResponse.json({ error: "خطا در حذف" }, { status: 500 });
+  }
+}
+
+// POST لایک / آنلایک
+export async function POST_LIKE(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { reviewId, userId, parentId } = body;
+
+    let target: Review | undefined;
+    if (parentId) {
+      const parent = reviews.find(r => r.id === parentId);
+      target = parent?.replies.find(rep => rep.id === reviewId);
+    } else {
+      target = reviews.find(r => r.id === reviewId);
+    }
+
+    if (!target) return NextResponse.json({ error: "کامنت پیدا نشد" }, { status: 404 });
+
+    if (target.likes.includes(userId)) {
+      target.likes = target.likes.filter(u => u !== userId);
+    } else {
+      target.likes.push(userId);
+    }
+
+    return NextResponse.json(target);
+  } catch (err) {
     return NextResponse.json({ error: "خطا در لایک" }, { status: 500 });
   }
 }
