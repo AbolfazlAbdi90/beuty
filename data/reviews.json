@@ -1,0 +1,98 @@
+[
+  {
+    "id": "f6233680-fe80-4a05-beee-0ee1cf1fc22e",
+    "productId": 1,
+    "userId": "7fdb4a74-d042-4188-bac1-2a1260bfa6c0",
+    "name": "سلام",
+    "text": "عالیییی",
+    "createdAt": "2025-10-29T19:56:41.902Z",
+    "likes": [
+      "1761842767816"
+    ],
+    "replies": []
+  },
+  {
+    "id": "1761823842691",
+    "productId": 1,
+    "userId": "1761823782130",
+    "name": "aboly",
+    "text": "nice",
+    "parentId": null,
+    "createdAt": "2025-10-30T11:30:42.691Z",
+    "likes": [],
+    "replies": []
+  },
+  {
+    "id": "1761824494639",
+    "productId": 2,
+    "userId": "1761824220648",
+    "name": "abolfazl",
+    "text": "خوبه",
+    "parentId": null,
+    "createdAt": "2025-10-30T11:41:34.639Z",
+    "likes": [
+      "1761842378621",
+      "1761842767816"
+    ],
+    "replies": []
+  },
+  {
+    "id": "1761824755613",
+    "productId": 2,
+    "userId": "1761824220648",
+    "name": "abolfazl",
+    "text": "jsndvknskjnv",
+    "parentId": null,
+    "createdAt": "2025-10-30T11:45:55.613Z",
+    "likes": [
+      "1761842378621",
+      "1761842767816"
+    ],
+    "replies": [
+      {
+        "id": "1761843055117",
+        "productId": 2,
+        "userId": "1761842378621",
+        "name": "dhfbvdbvjkbdsjkvb",
+        "text": "عالیه",
+        "parentId": "1761824755613",
+        "createdAt": "2025-10-30T16:50:55.117Z",
+        "likes": [],
+        "replies": []
+      }
+    ]
+  },
+  {
+    "id": "1761825134276",
+    "productId": 1,
+    "userId": "1761825084572",
+    "name": "ali",
+    "text": "عالیه این سایت",
+    "parentId": null,
+    "createdAt": "2025-10-30T11:52:14.276Z",
+    "likes": [],
+    "replies": []
+  },
+  {
+    "id": "1761842620464",
+    "productId": 1,
+    "userId": "1761842590351",
+    "name": "abolfazl ",
+    "text": "من خیلی راضیم ",
+    "parentId": null,
+    "createdAt": "2025-10-30T16:43:40.464Z",
+    "likes": [],
+    "replies": []
+  },
+  {
+    "id": "1761842734598",
+    "productId": 1,
+    "userId": "1761842590351",
+    "name": "abolfazl ",
+    "text": ".",
+    "parentId": null,
+    "createdAt": "2025-10-30T16:45:34.598Z",
+    "likes": [],
+    "replies": []
+  }
+]

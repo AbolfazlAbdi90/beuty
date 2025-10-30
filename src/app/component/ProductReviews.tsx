@@ -1,8 +1,11 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Review {
   id: string;
+  productId: number;
   userId: string;
   name: string;
   text: string;
@@ -11,223 +14,216 @@ interface Review {
   replies: Review[];
 }
 
-interface ReviewsProps {
-  productId: number;
-  currentUserId: string;
+interface User {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
 }
 
-export default function Reviews({ productId, currentUserId }: ReviewsProps) {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [name, setName] = useState("");
-  const [text, setText] = useState("");
-  const [replyId, setReplyId] = useState<string | null>(null);
+interface ReviewsProps {
+  productId: number;
+  currentUser: User | null;
+}
 
-  // بارگذاری نظرات
+export default function Reviews({ productId, currentUser }: ReviewsProps) {
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [text, setText] = useState("");
+  const [replyTo, setReplyTo] = useState<string | null>(null);
+
   const fetchReviews = async () => {
-    try {
-      const res = await fetch(`/api/review?productId=${productId}`);
-      if (!res.ok) throw new Error("خطا در دریافت نظرات");
-      const data: Review[] = await res.json();
-      setReviews(data);
-    } catch (err) {
-      console.error(err);
-    }
+    const res = await fetch(`/api/review?productId=${productId}`);
+    const data = await res.json();
+    setReviews(data);
   };
 
   useEffect(() => {
     fetchReviews();
   }, [productId]);
 
-  // ثبت نظر یا پاسخ
-  const handleSubmit = async (parentId?: string) => {
-    if (!name || !text) return;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentUser) {
+      window.location.href = "/Login";
+      return;
+    }
+    if (!text.trim()) return alert("متن نظر نمی‌تواند خالی باشد.");
 
-    try {
-      const res = await fetch("/api/review", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productId,
-          userId: currentUserId,
-          name,
-          text,
-          parentId,
-        }),
-      });
-      if (!res.ok) throw new Error("خطا در ثبت نظر");
+    const res = await fetch("/api/review", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        productId,
+        userId: currentUser.id,
+        name: currentUser.name,
+        text,
+        parentId: replyTo,
+      }),
+    });
 
-      const newReview: Review = await res.json();
-
-      if (parentId) {
-        setReviews(prev =>
-          prev.map(r =>
-            r.id === parentId ? { ...r, replies: [newReview, ...r.replies] } : r
-          )
-        );
-        setReplyId(null);
-      } else {
-        setReviews(prev => [newReview, ...prev]);
-      }
-
-      setName("");
+    if (res.ok) {
       setText("");
-    } catch (err) {
-      console.error(err);
-      alert("خطا در ثبت نظر");
+      setReplyTo(null);
+      fetchReviews();
+    } else {
+      alert("خطا در ارسال نظر");
     }
   };
 
-  // حذف نظر (فقط برای صاحب نظر)
-  const handleDelete = async (id: string, parentId?: string, ownerId?: string) => {
-    if (ownerId !== currentUserId) return;
-
-    try {
-      const res = await fetch("/api/review", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reviewId: id, userId: currentUserId, parentId }),
-      });
-      if (!res.ok) throw new Error("خطا در حذف نظر");
-
-      if (parentId) {
-        setReviews(prev =>
-          prev.map(r =>
-            r.id === parentId
-              ? { ...r, replies: r.replies.filter(rep => rep.id !== id) }
-              : r
-          )
-        );
-      } else {
-        setReviews(prev => prev.filter(r => r.id !== id));
-      }
-    } catch (err) {
-      console.error(err);
-    }
+  const handleLike = async (id: string) => {
+    if (!currentUser) return (window.location.href = "/Login");
+    await fetch("/api/review", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, userId: currentUser.id }),
+    });
+    fetchReviews();
   };
 
-  // لایک / آنلایک
-  const handleLike = async (id: string, parentId?: string) => {
-    try {
-      const res = await fetch("/api/review/like", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reviewId: id, userId: currentUserId, parentId }),
-      });
-      if (!res.ok) throw new Error("خطا در لایک");
-
-      const updatedReview: Review = await res.json();
-
-      if (parentId) {
-        setReviews(prev =>
-          prev.map(r =>
-            r.id === parentId
-              ? {
-                  ...r,
-                  replies: r.replies.map(rep =>
-                    rep.id === id ? updatedReview : rep
-                  ),
-                }
-              : r
-          )
-        );
-      } else {
-        setReviews(prev => prev.map(r => (r.id === id ? updatedReview : r)));
-      }
-    } catch (err) {
-      console.error(err);
-    }
+  const handleDelete = async (id: string, userId: string) => {
+    if (!currentUser || currentUser.id !== userId)
+      return alert("شما اجازه حذف این نظر را ندارید.");
+    await fetch(`/api/review?id=${id}`, { method: "DELETE" });
+    fetchReviews();
   };
 
-  // رندر کامنت‌ها
-  const renderReview = (r: Review, level = 0, parentId?: string) => (
-    <div
-      key={r.id}
-      className={`p-3 rounded-lg shadow-sm mb-4 border ${level === 0 ? "bg-white" : "bg-gray-50"}`}
-      style={{ marginLeft: level * 20 }}
-    >
-      <div className="flex justify-between items-center mb-1">
-        <strong>{r.name}</strong>
-        {r.userId === currentUserId && (
-          <button
-            onClick={() => handleDelete(r.id, parentId, r.userId)}
-            className="text-red-500 text-xs hover:underline"
-          >
-            حذف
-          </button>
-        )}
-      </div>
-      <p className="mb-2">{r.text}</p>
-      <div className="flex gap-3 items-center text-xs mb-2">
-        <button
-          className="hover:text-pink-600 transition-colors"
-          onClick={() => handleLike(r.id, parentId)}
-        >
-          {r.likes?.includes(currentUserId) ? "♥" : "♡"} {r.likes?.length || 0}
-        </button>
-        <button
-          className="text-pink-600 hover:underline transition"
-          onClick={() => setReplyId(r.id)}
-        >
-          پاسخ
-        </button>
-        <span className="text-gray-400">{new Date(r.createdAt).toLocaleString()}</span>
-      </div>
-
-      {replyId === r.id && (
-        <div className="flex flex-col gap-2 mt-2">
-          <input
-            value={name}
-            onChange={e => setName(e.target.value)}
-            placeholder="نام شما"
-            className="border p-2 rounded"
-          />
-          <textarea
-            value={text}
-            onChange={e => setText(e.target.value)}
-            placeholder="پاسخ شما"
-            className="border p-2 rounded"
-          />
-          <button
-            onClick={() => handleSubmit(r.id)}
-            className="bg-pink-600 text-white p-2 rounded w-24"
-          >
-            ثبت
-          </button>
-        </div>
-      )}
-
-      {r.replies.map(rep => renderReview(rep, level + 1, r.id))}
-    </div>
-  );
+  const handleReply = (id: string) => setReplyTo(id);
 
   return (
-    <div className="mt-10 p-4 rounded-lg shadow bg-gray-100 max-w-3xl mx-auto">
-      <h2 className="text-xl font-bold mb-4 text-center">نظرات کاربران</h2>
+    <div className="relative overflow-hidden bg-gradient-to-b from-pink-50 via-white to-pink-100 p-8 rounded-3xl shadow-[0_0_30px_rgba(255,0,128,0.1)] border border-pink-200">
+      {/* ✨ عنوان با انیمیشن */}
+      <motion.h2
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, type: "spring" }}
+        className="text-3xl font-extrabold text-center text-pink-600 mb-6 drop-shadow-[0_0_10px_rgba(255,0,128,0.4)]"
+      >
+        💖 نظرات کاربران BeautyLand 💖
+      </motion.h2>
 
-      <div className="flex flex-col gap-2 mb-6">
-        <input
-          value={name}
-          onChange={e => setName(e.target.value)}
-          placeholder="نام شما"
-          className="border p-2 rounded"
-        />
-        <textarea
-          value={text}
-          onChange={e => setText(e.target.value)}
-          placeholder="نظر شما"
-          className="border p-2 rounded"
-        />
-        <button
-          onClick={() => handleSubmit()}
-          className="bg-pink-600 text-white p-2 rounded w-32 mx-auto"
+      {/* ✍️ فرم نظر */}
+      <AnimatePresence>
+        {currentUser && (
+          <motion.form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-3 bg-white/40 backdrop-blur-lg p-6 rounded-2xl shadow-lg border border-pink-200"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 30 }}
+            transition={{ duration: 0.5 }}
+          >
+            {replyTo && (
+              <p className="text-sm text-pink-600">
+                در حال پاسخ به یک نظر...{" "}
+                <button
+                  type="button"
+                  onClick={() => setReplyTo(null)}
+                  className="text-gray-500 underline"
+                >
+                  لغو
+                </button>
+              </p>
+            )}
+
+            <motion.textarea
+              whileFocus={{ scale: 1.02, borderColor: "#ec4899" }}
+              transition={{ type: "spring", stiffness: 150 }}
+              placeholder="نظر خود را بنویسید..."
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              className="border-2 border-pink-200 p-3 rounded-xl bg-white/70 shadow-inner focus:outline-none"
+            />
+
+            <motion.button
+              type="submit"
+              whileHover={{ scale: 1.05, boxShadow: "0 0 15px rgba(236, 72, 153, 0.6)" }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 200 }}
+              className="bg-gradient-to-r from-pink-600 to-pink-400 text-white font-semibold py-2 rounded-xl"
+            >
+              ارسال نظر ✨
+            </motion.button>
+          </motion.form>
+        )}
+      </AnimatePresence>
+
+      {/* ❌ اگر لاگین نکرد */}
+      {!currentUser && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="text-center mt-6 text-gray-700"
         >
-          ثبت نظر
-        </button>
+          برای ارسال نظر ابتدا{" "}
+          <a href="/Login" className="text-pink-600 font-semibold underline">
+            وارد شوید 💅
+          </a>
+        </motion.div>
+      )}
+
+      {/* 💬 لیست نظرات */}
+      <div className="mt-8 flex flex-col gap-5">
+        {reviews.length === 0 ? (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="text-center text-gray-500"
+          >
+            هنوز نظری ثبت نشده 🥲 اولین نفر باش!
+          </motion.p>
+        ) : (
+          reviews.map((review) => (
+            <motion.div
+              key={review.id}
+              className="bg-white/80 p-4 rounded-2xl shadow-md border border-pink-100 hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] transition"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="flex justify-between items-center">
+                <p className="font-semibold text-pink-700">{review.name}</p>
+                <p className="text-xs text-gray-500">
+                  {new Date(review.createdAt).toLocaleDateString("fa-IR")}
+                </p>
+              </div>
+              <p className="mt-2 text-gray-700 leading-relaxed">{review.text}</p>
+
+              {/* ❤️ 💬 🗑 */}
+              <div className="flex gap-4 text-sm text-gray-500 mt-3">
+                <button onClick={() => handleLike(review.id)}>❤️ {review.likes.length}</button>
+                <button onClick={() => handleReply(review.id)}>💬 پاسخ</button>
+                {currentUser?.id === review.userId && (
+                  <button
+                    onClick={() => handleDelete(review.id, review.userId)}
+                    className="text-red-500"
+                  >
+                    🗑 حذف
+                  </button>
+                )}
+              </div>
+
+              {/* پاسخ‌ها */}
+              {review.replies?.length > 0 && (
+                <div className="ml-6 mt-3 border-l-2 border-pink-200 pl-3">
+                  {review.replies.map((reply) => (
+                    <motion.div
+                      key={reply.id}
+                      className="bg-pink-50 p-3 rounded-lg mt-2"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      <p className="font-semibold text-pink-600">{reply.name}</p>
+                      <p>{reply.text}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          ))
+        )}
       </div>
-
-      {reviews.length === 0 && <p className="text-gray-500 text-center">هیچ نظری ثبت نشده است.</p>}
-
-      <div>{reviews.map(r => renderReview(r))}</div>
     </div>
   );
 }

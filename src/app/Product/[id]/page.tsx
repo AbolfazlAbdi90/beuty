@@ -1,11 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
-import Cart from "@/app/component/addcart";
 import Container from "@/app/component/container";
+import Cart from "@/app/component/addcart";
 import ProductList from "../ProductList";
-import Image from "next/image";
 import Reviews from "@/app/component/ProductReviews";
 
 interface IProduct {
@@ -14,6 +14,13 @@ interface IProduct {
   image: string;
   description: string;
   price: number;
+}
+
+interface User {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
 }
 
 const fetchProduct = async (id: string) => {
@@ -26,14 +33,31 @@ const fetchProduct = async (id: string) => {
 };
 
 export default function ProductPage() {
+  const router = useRouter();
   const params = useParams();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
-  const { data: product, isLoading, error } = useQuery<IProduct>({
+  const {
+    data: product,
+    isLoading,
+    error,
+  } = useQuery<IProduct>({
     queryKey: ["product", id],
     queryFn: () => fetchProduct(id!),
     enabled: !!id,
   });
+
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  // 🎯 بررسی لاگین
+  useEffect(() => {
+    const savedUser = localStorage.getItem("currentUser");
+    if (!savedUser) {
+      router.push("/Login"); // هدایت به صفحه لاگین اگر لاگین نکرده باشد
+      return;
+    }
+    setCurrentUser(JSON.parse(savedUser));
+  }, [router]);
 
   if (!id) return <p className="text-center mt-20">شناسه محصول نامعتبر است</p>;
   if (isLoading) return <p className="text-center mt-20">در حال بارگذاری...</p>;
@@ -59,32 +83,16 @@ export default function ProductPage() {
           <div className="mt-4 flex justify-center md:justify-start">
             <Cart />
           </div>
-
-          {/* اضافه کردن بخش نظرات */}
-         
         </div>
       </div>
 
-      <div className="flex items-center justify-between w-full px-4 mt-30">
-        <Image
-          className="md:mr-[560px]"
-          src="/image/image-in-main/logo-inside-container/Vector 7.png"
-          alt=""
-          width={50}
-          height={50}
-        />
-        <h1 className="font-bold text-2xl text-center">لیست محصولات</h1>
-        <Image
-          className="md:ml-[560px]"
-          src="/image/image-in-main/logo-inside-container/Vector 8.png"
-          alt=""
-          width={50}
-          height={50}
-        />
-      </div>
- <div className="mt-10">
-            <Reviews productId={product.id}  currentUserId="test-user-1" />
-          </div>
+      {/* نظرات */}
+      {product && currentUser && (
+        <div className="mt-10">
+          <Reviews productId={product.id} currentUser={currentUser} />
+        </div>
+      )}
+
       <div className="mt-20">
         <ProductList />
       </div>

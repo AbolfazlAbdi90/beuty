@@ -1,116 +1,135 @@
-import { NextRequest, NextResponse } from "next/server";
+import { promises as fs } from "fs";
+import path from "path";
 
-interface Review {
+const filePath = path.join(process.cwd(), "data", "reviews.json");
+
+export interface Review {
   id: string;
   productId: number;
   userId: string;
   name: string;
   text: string;
+  parentId: string | null;
   createdAt: string;
   likes: string[];
   replies: Review[];
 }
 
-// ذخیره موقت
-let reviews: Review[] = [];
+// خواندن نظرات
+const readReviews = async (): Promise<Review[]> => {
+  try {
+    const data = await fs.readFile(filePath, "utf8");
+    return JSON.parse(data || "[]");
+  } catch {
+    return [];
+  }
+};
 
-// GET نظرات
-export async function GET(req: NextRequest) {
+// نوشتن نظرات
+const writeReviews = async (reviews: Review[]): Promise<void> => {
+  await fs.writeFile(filePath, JSON.stringify(reviews, null, 2), "utf8");
+};
+
+// حذف بازگشتی
+const deleteRecursive = (reviews: Review[], id: string): Review[] => {
+  return reviews
+    .filter(r => r.id !== id)
+    .map(r => ({
+      ...r,
+      replies: r.replies ? deleteRecursive(r.replies, id) : [],
+    }));
+};
+
+// لایک بازگشتی
+const likeRecursive = (reviews: Review[], id: string, userId: string): Review[] => {
+  return reviews.map(r => {
+    if (r.id === id) {
+      if (!r.likes.includes(userId)) r.likes.push(userId);
+      else r.likes = r.likes.filter(u => u !== userId);
+    }
+    return { ...r, replies: r.replies ? likeRecursive(r.replies, id, userId) : [] };
+  });
+};
+
+export async function GET(req: Request) {
   const url = new URL(req.url);
   const productId = url.searchParams.get("productId");
-  const productReviews = reviews.filter(r => r.productId === Number(productId));
-  return NextResponse.json(productReviews);
+  const reviews = await readReviews();
+  const filtered = productId
+    ? reviews.filter(r => r.productId.toString() === productId)
+    : reviews;
+  return new Response(JSON.stringify(filtered), { status: 200 });
 }
 
-// POST ثبت نظر یا پاسخ
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { productId, userId, name, text, parentId } = body;
-
+    const { productId, userId, name, text, parentId } = await req.json();
     if (!productId || !userId || !name || !text) {
-      return NextResponse.json({ error: "فیلدها ناقص است" }, { status: 400 });
+      return new Response(JSON.stringify({ error: "تمام فیلدها الزامی‌اند." }), { status: 400 });
     }
 
+    const reviews = await readReviews();
+
     const newReview: Review = {
-      id: crypto.randomUUID(),
+      id: Date.now().toString(),
       productId,
       userId,
       name,
       text,
+      parentId: parentId || null,
       createdAt: new Date().toISOString(),
       likes: [],
       replies: [],
     };
 
     if (parentId) {
-      reviews = reviews.map(r =>
-        r.id === parentId ? { ...r, replies: [newReview, ...r.replies] } : r
-      );
+      const addReply = (arr: Review[]): Review[] =>
+        arr.map(r => {
+          if (r.id === parentId) {
+            return { ...r, replies: [newReview, ...r.replies] };
+          }
+          return { ...r, replies: addReply(r.replies || []) };
+        });
+      await writeReviews(addReply(reviews));
     } else {
-      reviews = [newReview, ...reviews];
+      reviews.push(newReview);
+      await writeReviews(reviews);
     }
 
-    return NextResponse.json(newReview, { status: 201 });
+    return new Response(JSON.stringify(newReview), { status: 200 });
   } catch (err) {
-    return NextResponse.json({ error: "خطا در ثبت نظر" }, { status: 500 });
+    console.error(err);
+    return new Response(JSON.stringify({ error: "خطا در ثبت نظر" }), { status: 500 });
   }
 }
 
-// DELETE حذف (فقط صاحب نظر)
-export async function DELETE(req: NextRequest) {
+export async function DELETE(req: Request) {
+  const url = new URL(req.url);
+  const id = url.searchParams.get("id");
+  if (!id) return new Response(JSON.stringify({ error: "شناسه لازم است" }), { status: 400 });
+
   try {
-    const body = await req.json();
-    const { reviewId, userId, parentId } = body;
-
-    const target = parentId
-      ? reviews.find(r => r.id === parentId)?.replies.find(rep => rep.id === reviewId)
-      : reviews.find(r => r.id === reviewId);
-
-    if (!target || target.userId !== userId) {
-      return NextResponse.json({ error: "شما اجازه حذف این نظر را ندارید" }, { status: 403 });
-    }
-
-    if (parentId) {
-      reviews = reviews.map(r =>
-        r.id === parentId
-          ? { ...r, replies: r.replies.filter(rep => rep.id !== reviewId) }
-          : r
-      );
-    } else {
-      reviews = reviews.filter(r => r.id !== reviewId);
-    }
-
-    return NextResponse.json({ success: true });
+    const reviews = await readReviews();
+    const newReviews = deleteRecursive(reviews, id);
+    await writeReviews(newReviews);
+    return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (err) {
-    return NextResponse.json({ error: "خطا در حذف" }, { status: 500 });
+    console.error(err);
+    return new Response(JSON.stringify({ error: "خطا در حذف نظر" }), { status: 500 });
   }
 }
 
-// POST لایک / آنلایک
-export async function POST_LIKE(req: NextRequest) {
+export async function PUT(req: Request) {
   try {
-    const body = await req.json();
-    const { reviewId, userId, parentId } = body;
+    const { id, userId } = await req.json();
+    if (!id || !userId) return new Response(JSON.stringify({ error: "شناسه و userId لازم است" }), { status: 400 });
 
-    let target: Review | undefined;
-    if (parentId) {
-      const parent = reviews.find(r => r.id === parentId);
-      target = parent?.replies.find(rep => rep.id === reviewId);
-    } else {
-      target = reviews.find(r => r.id === reviewId);
-    }
-
-    if (!target) return NextResponse.json({ error: "کامنت پیدا نشد" }, { status: 404 });
-
-    if (target.likes.includes(userId)) {
-      target.likes = target.likes.filter(u => u !== userId);
-    } else {
-      target.likes.push(userId);
-    }
-
-    return NextResponse.json(target);
+    const reviews = await readReviews();
+    const newReviews = likeRecursive(reviews, id, userId);
+    await writeReviews(newReviews);
+    return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (err) {
-    return NextResponse.json({ error: "خطا در لایک" }, { status: 500 });
+    console.error(err);
+    return new Response(JSON.stringify({ error: "خطا در لایک" }), { status: 500 });
   }
 }
