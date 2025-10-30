@@ -40,7 +40,6 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         setLoading(false);
         return;
       }
-      // ذخیره محلی و اطلاع والد
       localStorage.setItem("currentUser", JSON.stringify(user));
       onLogin(user);
       setMsg(`خوش آمدی، ${user.name} ✨`);
@@ -55,43 +54,46 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.6, type: "spring", stiffness: 80 }}
-      className="max-w-md mx-auto p-6 rounded-2xl bg-gradient-to-br from-[#0b0b0b] via-[#111213] to-[#0f0f10] border border-rose-900 shadow-[0_10px_40px_rgba(0,0,0,0.6)]"
+      initial={{ opacity: 0, scale: 0.9, y: -50 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.8, type: "spring", stiffness: 70 }}
+      className="max-w-md mx-auto p-8 rounded-3xl bg-gradient-to-br from-black/70 via-gray-900/60 to-black/80 border border-amber-500 shadow-[0_25px_50px_rgba(255,200,0,0.3)] backdrop-blur-md"
     >
-      <div className="mb-4 text-center">
-        <div className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-200 drop-shadow-md">
+      <div className="mb-6 text-center">
+        <h1 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-200 drop-shadow-lg">
           BeautyLand
-        </div>
-        <p className="text-sm text-gray-300/80 mt-1">عضویت یا ورود به حساب</p>
+        </h1>
+        <p className="text-gray-300/70 mt-2">عضویت یا ورود به حساب</p>
       </div>
 
-      <form onSubmit={submit} className="flex flex-col gap-3">
-        <input
+      <form onSubmit={submit} className="flex flex-col gap-4">
+        <motion.input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="نام کامل"
-          className="p-3 rounded-xl bg-black/40 border border-rose-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-300"
+          whileFocus={{ scale: 1.02, boxShadow: "0 0 20px rgba(255,200,50,0.5)" }}
+          className="p-3 rounded-xl bg-black/50 border border-amber-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
         />
-        <input
+        <motion.input
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="شماره تماس"
-          className="p-3 rounded-xl bg-black/40 border border-rose-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-300"
+          whileFocus={{ scale: 1.02, boxShadow: "0 0 20px rgba(255,200,50,0.5)" }}
+          className="p-3 rounded-xl bg-black/50 border border-amber-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
         />
-        <input
+        <motion.input
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="ایمیل"
           type="email"
-          className="p-3 rounded-xl bg-black/40 border border-rose-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-300"
+          whileFocus={{ scale: 1.02, boxShadow: "0 0 20px rgba(255,200,50,0.5)" }}
+          className="p-3 rounded-xl bg-black/50 border border-amber-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
         />
 
         <motion.button
-          whileHover={{ scale: 1.03, boxShadow: "0 6px 30px rgba(255,200,80,0.25)" }}
-          whileTap={{ scale: 0.98 }}
-          className="mt-2 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-semibold"
+          whileHover={{ scale: 1.05, boxShadow: "0 0 25px rgba(255,220,100,0.5)" }}
+          whileTap={{ scale: 0.97 }}
+          className="mt-3 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold text-lg shadow-lg"
           type="submit"
           disabled={loading}
         >
@@ -100,12 +102,16 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
       </form>
 
       {msg && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 text-center text-sm text-amber-100">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-4 text-center text-amber-100 font-medium"
+        >
           {msg}
         </motion.div>
       )}
 
-      <div className="mt-4 text-center text-xs text-gray-400">
+      <div className="mt-6 text-center text-xs text-gray-400">
         اطلاعات شما امن است — BeautyLand ✨
       </div>
     </motion.div>
