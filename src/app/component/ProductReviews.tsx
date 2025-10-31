@@ -30,104 +30,89 @@ export default function Reviews({ productId, currentUser }: ReviewsProps) {
   const [text, setText] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);
 
-  // بارگذاری نظرات از localStorage
-  useEffect(() => {
-   const stored: Review[] = (JSON.parse(localStorage.getItem(`reviews_${productId}`) || "[]") as Review[]).map((r: Review) => ({
-  ...r,
-  likes: r.likes || [],
-  replies: r.replies || [],
-}));
-
-    setReviews(stored);
-  }, [productId]);
-
-  // ذخیره نظرات در localStorage
-  const saveReviews = (updated: Review[]) => {
-    localStorage.setItem(`reviews_${productId}`, JSON.stringify(updated));
-    setReviews(updated);
+  // Load reviews from localStorage
+  const fetchReviews = () => {
+    const allReviews: Review[] = JSON.parse(localStorage.getItem("reviews") || "[]");
+    setReviews(allReviews.filter(r => r.productId === productId));
   };
 
-  // ارسال نظر یا پاسخ
+  useEffect(() => {
+    fetchReviews();
+  }, [productId]);
+
+  const saveReviews = (allReviews: Review[]) => {
+    localStorage.setItem("reviews", JSON.stringify(allReviews));
+    fetchReviews();
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser) return (window.location.href = "/Login");
     if (!text.trim()) return alert("متن نظر نمی‌تواند خالی باشد.");
 
-    const newReview: Review = {
-      id: Date.now().toString(),
-      productId,
-      userId: currentUser.id,
-      name: currentUser.name,
-      text,
-      createdAt: new Date().toISOString(),
-      likes: [],
-      replies: [],
-    };
+    const allReviews: Review[] = JSON.parse(localStorage.getItem("reviews") || "[]");
 
-    let updatedReviews = [...reviews];
     if (replyTo) {
-      // اضافه کردن پاسخ به review مربوطه
-      updatedReviews = updatedReviews.map(r => {
-        if (r.id === replyTo) {
-          return { ...r, replies: [...r.replies, newReview] };
-        }
-        return r;
-      });
+      // پاسخ دادن
+      const parent = allReviews.find(r => r.id === replyTo);
+      if (parent) {
+        parent.replies = parent.replies || [];
+        parent.replies.push({
+          id: Date.now().toString(),
+          productId,
+          userId: currentUser.id,
+          name: currentUser.name,
+          text,
+          createdAt: new Date().toISOString(),
+          likes: [],
+          replies: [],
+        });
+      }
     } else {
-      updatedReviews.push(newReview);
+      // نظر جدید
+      allReviews.push({
+        id: Date.now().toString(),
+        productId,
+        userId: currentUser.id,
+        name: currentUser.name,
+        text,
+        createdAt: new Date().toISOString(),
+        likes: [],
+        replies: [],
+      });
     }
 
-    saveReviews(updatedReviews);
+    saveReviews(allReviews);
     setText("");
     setReplyTo(null);
   };
 
-  // لایک کردن
-  const handleLike = (id: string, parentId?: string) => {
+  const handleLike = (id: string) => {
     if (!currentUser) return (window.location.href = "/Login");
+    const allReviews: Review[] = JSON.parse(localStorage.getItem("reviews") || "[]");
 
-    const updatedReviews = reviews.map(r => {
-      if (parentId && r.id === parentId) {
-        const replies = r.replies.map(rep => {
-          if (rep.id === id) {
-            const likes = rep.likes.includes(currentUser.id)
-              ? rep.likes.filter(u => u !== currentUser.id)
-              : [...rep.likes, currentUser.id];
-            return { ...rep, likes };
-          }
-          return rep;
-        });
-        return { ...r, replies };
-      } else if (!parentId && r.id === id) {
-        const likes = r.likes.includes(currentUser.id)
-          ? r.likes.filter(u => u !== currentUser.id)
-          : [...r.likes, currentUser.id];
-        return { ...r, likes };
+    const review = allReviews.find(r => r.id === id);
+    if (review) {
+      review.likes = review.likes || [];
+      if (review.likes.includes(currentUser.id)) {
+        review.likes = review.likes.filter(uid => uid !== currentUser.id);
+      } else {
+        review.likes.push(currentUser.id);
       }
-      return r;
-    });
-
-    saveReviews(updatedReviews);
-  };
-
-  // حذف نظر یا پاسخ
-  const handleDelete = (id: string, userId: string, parentId?: string) => {
-    if (!currentUser || currentUser.id !== userId) return alert("اجازه حذف ندارید");
-
-    let updatedReviews = reviews;
-    if (parentId) {
-      updatedReviews = updatedReviews.map(r => {
-        if (r.id === parentId) {
-          return { ...r, replies: r.replies.filter(rep => rep.id !== id) };
-        }
-        return r;
-      });
-    } else {
-      updatedReviews = updatedReviews.filter(r => r.id !== id);
     }
 
-    saveReviews(updatedReviews);
+    saveReviews(allReviews);
   };
+
+  const handleDelete = (id: string, userId: string) => {
+    if (!currentUser || currentUser.id !== userId)
+      return alert("شما اجازه حذف این نظر را ندارید.");
+    let allReviews: Review[] = JSON.parse(localStorage.getItem("reviews") || "[]");
+    allReviews = allReviews.filter(r => r.id !== id);
+    saveReviews(allReviews);
+  };
+
+  const handleReply = (id: string) => setReplyTo(id);
 
   return (
     <div className="relative overflow-hidden bg-gradient-to-b from-pink-50 via-white to-pink-100 p-8 rounded-3xl shadow-[0_0_30px_rgba(255,0,128,0.1)] border border-pink-200">
@@ -140,7 +125,6 @@ export default function Reviews({ productId, currentUser }: ReviewsProps) {
         💖 نظرات کاربران BeautyLand 💖
       </motion.h2>
 
-      {/* فرم نظر */}
       <AnimatePresence>
         {currentUser && (
           <motion.form
@@ -169,13 +153,13 @@ export default function Reviews({ productId, currentUser }: ReviewsProps) {
               transition={{ type: "spring", stiffness: 150 }}
               placeholder="نظر خود را بنویسید..."
               value={text}
-              onChange={e => setText(e.target.value)}
+              onChange={(e) => setText(e.target.value)}
               className="border-2 border-pink-200 p-3 rounded-xl bg-white/70 shadow-inner focus:outline-none"
             />
 
             <motion.button
               type="submit"
-              whileHover={{ scale: 1.05, boxShadow: "0 0 15px rgba(236, 72, 153, 0.6)" }}
+              whileHover={{ scale: 1.05, boxShadow: "0 0 15px rgba(236, 72, 153,0.6)" }}
               whileTap={{ scale: 0.95 }}
               transition={{ type: "spring", stiffness: 200 }}
               className="bg-gradient-to-r from-pink-600 to-pink-400 text-white font-semibold py-2 rounded-xl"
@@ -200,7 +184,6 @@ export default function Reviews({ productId, currentUser }: ReviewsProps) {
         </motion.div>
       )}
 
-      {/* نمایش نظرات */}
       <div className="mt-8 flex flex-col gap-5">
         {reviews.length === 0 ? (
           <motion.p
@@ -212,7 +195,7 @@ export default function Reviews({ productId, currentUser }: ReviewsProps) {
             هنوز نظری ثبت نشده 🥲 اولین نفر باش!
           </motion.p>
         ) : (
-          reviews.map(review => (
+          reviews.map((review) => (
             <motion.div
               key={review.id}
               className="bg-white/80 p-4 rounded-2xl shadow-md border border-pink-100 hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] transition"
@@ -228,10 +211,11 @@ export default function Reviews({ productId, currentUser }: ReviewsProps) {
               </div>
               <p className="mt-2 text-gray-700 leading-relaxed">{review.text}</p>
 
-              {/* ❤️ 💬 🗑 */}
               <div className="flex gap-4 text-sm text-gray-500 mt-3">
-                <button onClick={() => handleLike(review.id)}>❤️ {review.likes?.length || 0}</button>
-                <button onClick={() => setReplyTo(review.id)}>💬 پاسخ</button>
+                <button onClick={() => handleLike(review.id)}>
+                  ❤️ {review.likes?.length || 0}
+                </button>
+                <button onClick={() => handleReply(review.id)}>💬 پاسخ</button>
                 {currentUser?.id === review.userId && (
                   <button
                     onClick={() => handleDelete(review.id, review.userId)}
@@ -242,29 +226,17 @@ export default function Reviews({ productId, currentUser }: ReviewsProps) {
                 )}
               </div>
 
-              {/* پاسخ‌ها */}
-              {review.replies.length > 0 && (
+              {(review.replies || []).length > 0 && (
                 <div className="ml-6 mt-3 border-l-2 border-pink-200 pl-3">
-                  {review.replies.map(rep => (
+                  {(review.replies || []).map((reply) => (
                     <motion.div
-                      key={rep.id}
-                      className="bg-pink-50 p-3 rounded-lg mt-2"
+                      key={reply.id}
+                      className="bg-pink-50 p-3 rounded-xl mt-2"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                     >
-                      <p className="font-semibold text-pink-600">{rep.name}</p>
-                      <p>{rep.text}</p>
-                      <div className="flex gap-3 mt-2 text-sm">
-                        <button onClick={() => handleLike(rep.id, review.id)}>❤️ {rep.likes?.length || 0}</button>
-                        {currentUser?.id === rep.userId && (
-                          <button
-                            onClick={() => handleDelete(rep.id, rep.userId, review.id)}
-                            className="text-red-500"
-                          >
-                            🗑 حذف
-                          </button>
-                        )}
-                      </div>
+                      <p className="font-semibold text-pink-600">{reply.name}</p>
+                      <p>{reply.text}</p>
                     </motion.div>
                   ))}
                 </div>
