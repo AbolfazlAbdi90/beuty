@@ -1,45 +1,48 @@
-import { promises as fs } from "fs";
-import path from "path";
+import { MongoClient } from "mongodb";
 
-const filePath = path.join(process.cwd(), "data", "users.json");
+const uri = process.env.MONGODB_URI!;
+const client = new MongoClient(uri);
+const dbName = "beautyland";
 
 interface User {
-  id: string;
+  id?: string;
   name: string;
   phone: string;
   email: string;
 }
 
-// خواندن کاربران
-const readUsers = async (): Promise<User[]> => {
-  try {
-    const data = await fs.readFile(filePath, "utf8");
-    return JSON.parse(data || "[]");
-  } catch {
-    return [];
-  }
-};
-
-// نوشتن کاربران
-const writeUsers = async (users: User[]) => {
-  await fs.writeFile(filePath, JSON.stringify(users, null, 2), "utf8");
-};
-
 export async function POST(req: Request) {
   try {
     const { name, phone, email } = await req.json();
-    if (!name || !phone || !email) return new Response(JSON.stringify({ error: "تمام فیلدها الزامی‌اند" }), { status: 400 });
 
-    const users = await readUsers();
-    const id = Date.now().toString();
-    const newUser: User = { id, name, phone, email };
+    // ✅ اعتبارسنجی داده‌ها
+    if (!name || !phone || !email)
+      return new Response(JSON.stringify({ error: "تمام فیلدها الزامی‌اند" }), { status: 400 });
 
-    users.push(newUser);
-    await writeUsers(users);
+    if (!/^09\d{9}$/.test(phone))
+      return new Response(JSON.stringify({ error: "شماره موبایل معتبر نیست" }), { status: 400 });
 
-    return new Response(JSON.stringify(newUser), { status: 200 });
+    if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email))
+      return new Response(JSON.stringify({ error: "ایمیل معتبر نیست" }), { status: 400 });
+
+    await client.connect();
+    const db = client.db(dbName);
+    const users = db.collection<User>("users");
+
+    // ✅ بررسی کاربر تکراری
+    const existing = await users.findOne({ email });
+    if (existing) {
+      return new Response(JSON.stringify(existing), { status: 200 });
+    }
+
+    const newUser: User = { name, phone, email };
+    const result = await users.insertOne(newUser);
+
+    return new Response(JSON.stringify({ ...newUser, id: result.insertedId }), { status: 200 });
   } catch (err) {
-    console.error(err);
+    console.error("❌ خطا در API:", err);
     return new Response(JSON.stringify({ error: "خطا در ثبت اطلاعات" }), { status: 500 });
+  } finally {
+    await client.close();
   }
 }
