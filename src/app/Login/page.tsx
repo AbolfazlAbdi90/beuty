@@ -38,7 +38,7 @@ export default function Page() {
     <Container>
       {!user ? (
         // ✅ فرم لاگین
-        <LoginForm onLogin={handleLogin} />
+        <LoginForm />
       ) : (
         // ✅ بعد از ورود
         <div className="flex flex-col items-center gap-6 p-4">
