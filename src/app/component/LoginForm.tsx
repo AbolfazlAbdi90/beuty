@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
+import { Variants } from "framer-motion";
 import { initializeApp, getApps, getApp } from "firebase/app";
 import {
   getFirestore,
@@ -23,10 +24,11 @@ const firebaseConfig = {
   apiKey: "AIzaSyCgnoar5Wqv2UsYw9TSCuV3omSQXvT7IcA",
   authDomain: "beautylandapp-896de.firebaseapp.com",
   projectId: "beautylandapp-896de",
-  storageBucket: "beautylandapp-896de.firebasestorage.app",
+  storageBucket: "beautylandapp-896de.appspot.com",  // اینجا اصلاح شده
   messagingSenderId: "544616799175",
   appId: "1:544616799175:web:91e7adbb7a04f16bad57e2",
 };
+
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -58,13 +60,13 @@ interface Message {
   replyTo?: string | null;
 }
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.1 } },
   exit: { opacity: 0, y: 20 },
 };
 
-const messageVariants = {
+const messageVariants: Variants = {
   hidden: { opacity: 0, y: 10, scale: 0.95 },
   visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.3, ease: "easeOut" } },
   exit: { opacity: 0, y: 10, scale: 0.95, transition: { duration: 0.2 } },
