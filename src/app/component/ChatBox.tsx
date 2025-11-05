@@ -220,7 +220,7 @@ export default function ChatBox({ onClose }: ChatBoxProps) {
   }
 
   return (
-    <div className="fixed bottom-20 right-6 w-96 h-[500px] bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden z-50">
+    <div className="fixed bottom-20 right-6 md:w-96 h-[500px] w-full bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden z-50">
       <div className="flex justify-between items-center bg-pink-500 text-white p-3">
         <div className="flex items-center gap-2">
           <img
@@ -267,7 +267,7 @@ export default function ChatBox({ onClose }: ChatBoxProps) {
    
 
         {selectedFile && (
-          <div className="p-2 rounded-lg max-w-[75%] bg-gray-200 text-gray-800">
+          <div className="p-2 rounded-lg  bg-gray-200 text-gray-800">
             <p className="mb-2 font-semibold">پیش‌نمایش فایل انتخاب شده:</p>
             {previewUrl ? (
               selectedFile.type.startsWith("image") ? (
