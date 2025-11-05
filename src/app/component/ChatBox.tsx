@@ -34,7 +34,6 @@ export default function ChatBox({ onClose }: ChatBoxProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
 
-  // بارگذاری userId و پیام‌ها از localStorage در شروع
   useEffect(() => {
     const storedId = localStorage.getItem("chatUserId");
     if (storedId) setUserId(storedId);
@@ -45,14 +44,12 @@ export default function ChatBox({ onClose }: ChatBoxProps) {
     }
   }, []);
 
-  // ذخیره پیام‌ها در localStorage هر بار که تغییر کنند
   useEffect(() => {
     if (userId) {
       localStorage.setItem("chatMessages_" + userId, JSON.stringify(messages));
     }
   }, [messages, userId]);
 
-  // دریافت پیام‌ها از Firebase و بروز رسانی state و localStorage
   useEffect(() => {
     if (!userId) return;
 
@@ -70,7 +67,6 @@ export default function ChatBox({ onClose }: ChatBoxProps) {
     return unsubscribe;
   }, [userId]);
 
-  // علامت گذاری پیام‌های خوانده نشده از ادمین به عنوان دیده شده
   useEffect(() => {
     const markSeen = async () => {
       if (!userId) return;
@@ -101,10 +97,9 @@ export default function ChatBox({ onClose }: ChatBoxProps) {
     }
   };
 
-  const handleSend = async () => {
+  const handleSend = async (): Promise<void> => {
     if (!userId) return;
 
-    // ارسال پیام متنی
     if (message.trim()) {
       const newMessage = {
         userId,
@@ -116,20 +111,16 @@ export default function ChatBox({ onClose }: ChatBoxProps) {
         createdAt: new Date(),
       };
 
-      // ابتدا پیام به state اضافه میشه برای تجربه بهتر کاربری
       setMessages((prev) => [...prev, newMessage]);
       setMessage("");
 
-      // سپس به Firebase اضافه میشه
       await addDoc(collection(db, "messages"), {
         ...newMessage,
         createdAt: serverTimestamp(),
       });
     }
 
-    // ارسال فایل (عکس، ویدئو، صوت)
     if (selectedFile) {
-      // آپلود فایل به Firebase Storage
       const fileRef = ref(
         storage,
         `uploads/${userId}/${Date.now()}_${selectedFile.name}`
@@ -173,10 +164,6 @@ export default function ChatBox({ onClose }: ChatBoxProps) {
     }
   };
 
-  // ضبط و ارسال ویس از کامپوننت VoiceRecorder که خودش آپلود و ارسال میکنه
-  // فقط اینجا onSend رو میتونی مدیریت کنی یا پیام جدید رو پس از ارسال به state اضافه کنی
-
-  // فرمت نمایش تاریخ و ساعت
   const formatDate = (timestamp: any) => {
     if (!timestamp) return "";
     let date: Date;
@@ -237,7 +224,7 @@ export default function ChatBox({ onClose }: ChatBoxProps) {
       <div className="flex justify-between items-center bg-pink-500 text-white p-3">
         <div className="flex items-center gap-2">
           <img
-            src="/avatar.jpg"
+            src="/image/image-in-main/founden/abolfazl.png"
             alt="avatar"
             className="w-8 h-8 rounded-full border-2 border-white"
           />
@@ -277,8 +264,7 @@ export default function ChatBox({ onClose }: ChatBoxProps) {
           </div>
         ))}
 
- <VoiceRecorder userId={userId} name={name} phone={phone} onSend={(msg) => setMessages((prev) => [...prev, msg])} />
-
+   
 
         {selectedFile && (
           <div className="p-2 rounded-lg max-w-[75%] bg-gray-200 text-gray-800">
@@ -287,7 +273,11 @@ export default function ChatBox({ onClose }: ChatBoxProps) {
               selectedFile.type.startsWith("image") ? (
                 <img src={previewUrl} alt="preview" className="rounded-lg" />
               ) : selectedFile.type.startsWith("video") ? (
-                <video src={previewUrl} controls className="rounded-lg max-h-48" />
+                <video
+                  src={previewUrl}
+                  controls
+                  className="rounded-lg max-h-48"
+                />
               ) : (
                 <p>{selectedFile.name}</p>
               )
