@@ -1,7 +1,7 @@
-// src/lib/firebase.ts
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCgnoar5Wqv2UsYw9TSCuV3omSQXvT7IcA",
@@ -13,12 +13,10 @@ const firebaseConfig = {
   measurementId: "G-4F7X2XG2ZF",
 };
 
-// از چند بار initialize جلوگیری می‌کند
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// ساخت اتصال‌ها
 const db = getFirestore(app);
 const auth = getAuth(app);
+const storage = getStorage(app);
 
-// صادر کردن برای استفاده در بقیه فایل‌ها
-export { app, db, auth };
+export { app, db, auth, storage };

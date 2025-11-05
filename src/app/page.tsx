@@ -2,6 +2,7 @@ import React from "react";
 import Container from "./component/container";
 import Link from "next/link";
 import Main from "./Main/main";
+import ChatWidget from "./component/ChatWidget";
 
 export default function Home() {
   return (
@@ -36,6 +37,7 @@ export default function Home() {
 
         {/* logo for main beard */}
         <Main />
+        <ChatWidget />
       </div>
     </Container>
   );
