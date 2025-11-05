@@ -220,7 +220,7 @@ export default function ChatBox({ onClose }: ChatBoxProps) {
   }
 
   return (
-    <div className="fixed bottom-20 right-6 md:w-96 h-[500px] w-70 bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden z-50">
+    <div className="fixed bottom-20 right-6 md:w-96 h-[500px] w-85 bg-white rounded-2xl shadow-lg flex flex-col overflow-hidden z-50">
       <div className="flex justify-between items-center bg-pink-500 text-white p-3">
         <div className="flex items-center gap-2">
           <img
