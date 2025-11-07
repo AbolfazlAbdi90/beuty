@@ -10,7 +10,7 @@ export default function Navbar() {
   const menuItems = [
      
     { name: "خانه", href: "/" },
-    { name: "تماس با ما", href: "/contact" },
+    { name: "تماس با ما", href: "/ContactUs" },
     { name: "ورود , ثبته نام", href: "/Login" },
     { name: "درباره ما", href: "/About" },
     { name: "پروفایل", href: "/Profile" },
