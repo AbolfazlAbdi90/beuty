@@ -83,7 +83,7 @@ export default function ContactForm() {
             placeholder="شماره موبایل"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className="p-4 rounded-2xl border border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-sm placeholder-pink-400 text-gray-700"
+            className="p-4 text-right rounded-2xl border border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-sm placeholder-pink-400 text-gray-700"
           />
 
           <textarea
