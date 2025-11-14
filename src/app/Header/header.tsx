@@ -5,8 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import Search from "../component/search";
 import Navbar from "../component/navbar";
-import CartButton from "../component/CartList";
 import Profile from "../component/profile";
+import { FiShoppingCart } from "react-icons/fi";
 
 export default function Header() {
   return (
@@ -29,9 +29,6 @@ export default function Header() {
               />
             </Link>
           </div>
-
-          {/* Cart سمت راست */}
-          <CartButton />
         </div>
 
         {/* Search زیر لوگو */}
@@ -61,7 +58,11 @@ export default function Header() {
           <div className="flex items-center gap-4">
             {/* پروفایل (مخفی در موبایل) */}
             <Profile />
-            <CartButton />
+            <div className="flex items-center  cursor-pointer justify-center bg-[#EC6880] text-white p-4 rounded-full hover:bg-pink-600 transition">
+              <Link href="/Cart" >
+              <FiShoppingCart size={24} />
+              </Link>
+            </div>
           </div>
         </div>
 

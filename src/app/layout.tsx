@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "./Header/header";
 import ReactQueryProvider from "./ReactQueryProvider";
 import Footer from "./Footer/footer";
+import { CartContextProvider } from "./Context/CartContext";
 
 export const metadata: Metadata = {
   title: "Beauty Land",
@@ -16,11 +17,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
+      <body
+        className="antialiased"
+        style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
+      >
         <ReactQueryProvider>
-          <Header />
-          {children}
-          <Footer />
+          <CartContextProvider>
+            <Header />
+            {children}
+            <Footer />
+          </CartContextProvider>
         </ReactQueryProvider>
       </body>
     </html>
