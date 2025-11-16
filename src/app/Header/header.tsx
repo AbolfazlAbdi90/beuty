@@ -7,8 +7,10 @@ import Search from "../component/search";
 import Navbar from "../component/navbar";
 import Profile from "../component/profile";
 import { FiShoppingCart } from "react-icons/fi";
+import { UseCartContext } from "../Context/CartContext";
 
 export default function Header() {
+  const { handleTotalyQty } = UseCartContext();
   return (
     <Container>
       {/* موبایل */}
@@ -58,9 +60,10 @@ export default function Header() {
           <div className="flex items-center gap-4">
             {/* پروفایل (مخفی در موبایل) */}
             <Profile />
+            <span className="ml-[-16px] mt-[-30px] bg-red-500 text-white px-3 py-1 rounded-2xl " >{handleTotalyQty}</span>
             <div className="flex items-center  cursor-pointer justify-center bg-[#EC6880] text-white p-4 rounded-full hover:bg-pink-600 transition">
-              <Link href="/Cart" >
-              <FiShoppingCart size={24} />
+              <Link href="/Cart">
+                <FiShoppingCart size={24}></FiShoppingCart>
               </Link>
             </div>
           </div>

@@ -81,7 +81,7 @@ export default function ProductPage() {
           </p>
           <p className="text-gray-600 mt-3">{product.description}</p>
           <div className="mt-4 flex justify-center md:justify-start">
-            <Cart />
+            <Cart id={id} />
           </div>
         </div>
       </div>

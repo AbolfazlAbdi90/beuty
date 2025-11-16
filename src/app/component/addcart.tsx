@@ -1,22 +1,20 @@
 "use client"
 import { useState } from "react"
+import { UseCartContext } from "../Context/CartContext"
 
-
-export default function Cart() {
-  const [item,setItem] = useState(0)
-  const handelIncrease = ()=>{
-    return setItem(item+1)
-  }
-  const handelDecrease = ()=>{
-    return setItem(item-1)
-  }
+interface Iprops {
+  id:string
+}
+export default function Cart({id}:Iprops) {
+  const {cartItems,handleIncrease,HandleCount,handleDecrease} = UseCartContext()
+  console.log(cartItems)
   return (
     <div className="flex gap-4 " >
-        <button onClick={handelIncrease} className=' cursor-pointer text-2xl px-6 py-1 bg-blue-500 text-white h-[56px] rounded-2xl ' >
+        <button onClick={()=>handleIncrease(parseInt(id))} className=' cursor-pointer text-2xl px-6 py-1 bg-blue-500 text-white h-[56px] rounded-2xl ' >
            +
         </button>
-        <h1 className="mt-4" >{item}</h1>
-        <button onClick={handelDecrease} className='cursor-pointer text-2xl px-6 py-1 bg-red-500 text-white h-[56px] rounded-2xl ' >
+        <h1 className="mt-4" >{HandleCount(parseInt(id))}</h1>
+        <button onClick={()=>handleDecrease(parseInt(id))} className='cursor-pointer text-2xl px-6 py-1 bg-red-500 text-white h-[56px] rounded-2xl ' >
            -
         </button>
     </div>
