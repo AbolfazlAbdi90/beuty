@@ -28,14 +28,14 @@ export default function Header() {
                 alt="logo-in-website"
                 width={100}
                 height={100}
-                className="rounded-2xl mr-[30px] h-[100px] w-[150px] "
+                className="rounded-2xl mr-[-10px] h-[100px] w-[220px] "
               />
             </Link>
 
             {/* سبد خرید در موبایل (کنار لوگو سمت چپ) */}
                 {/* تعداد سبد خرید */}
             <div className="flex justify-end" >
-              <span className=" bg-red-500 mr-[50] w-[40px] px-3.75 py-2 h-[40px] text-white  rounded-full">
+              <span className=" bg-red-500 mr-[0] w-[40px] px-3.75 py-2 h-[40px] text-white  rounded-full">
               {handleTotalyQty}
             </span>
             </div>
