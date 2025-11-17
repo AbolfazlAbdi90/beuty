@@ -28,15 +28,17 @@ export default function Header() {
                 alt="logo-in-website"
                 width={100}
                 height={100}
-                className="rounded-2xl mr-[-70px] h-[100px] w-[190px] "
+                className="rounded-2xl mr-[30px] h-[100px] w-[150px] "
               />
             </Link>
 
             {/* سبد خرید در موبایل (کنار لوگو سمت چپ) */}
                 {/* تعداد سبد خرید */}
-            <span className=" bg-red-500 ml-[-120px] w-[40px] px-3.75 py-2 h-[40px] text-white  rounded-full">
+            <div className="flex justify-end" >
+              <span className=" bg-red-500 mr-[50] w-[40px] px-3.75 py-2 h-[40px] text-white  rounded-full">
               {handleTotalyQty}
             </span>
+            </div>
             <Link
               href="/Cart"
               className="absolute left-[0px] top-1/2 -translate-y-1/2 bg-[#EC6880] text-white py-5 px-5 rounded-full shadow-md flex items-center justify-center"
