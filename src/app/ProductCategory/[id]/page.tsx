@@ -58,7 +58,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           </p>
 
           <div className="flex justify-center md:justify-start">
-            <Cart />
+            <Cart id={product.id.toString()} />
           </div>
         </div>
       </div>
