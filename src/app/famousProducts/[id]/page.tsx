@@ -32,7 +32,8 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             <p className="text-pink-600 text-2xl mt-3 font-semibold">
               {product.price.toLocaleString("fa-IR")} تومان
             </p>
-            <Cart />
+            <Cart id={String(product.id)} />
+
             {/* توضیحات (اختیاری)
           <p className="text-gray-600 text-sm mt-4 leading-relaxed">
             {product.description || "توضیحی برای این محصول وجود ندارد."}

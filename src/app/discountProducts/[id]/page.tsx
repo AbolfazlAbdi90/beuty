@@ -77,7 +77,8 @@ export default function DiscountProductPage({
           <p className="text-gray-600 text-sm mt-4 leading-relaxed">
             {product.description}
           </p>
-          <Cart />
+          <Cart id={String(product.id)} />
+
         </div>
       </div>
     </div>
