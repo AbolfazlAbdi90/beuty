@@ -9,8 +9,23 @@ export default function CartButton() {
       <h1 className="text-center text-xl md:text-2xl font-semibold my-6">
         سبد خرید
       </h1>
-      <CartItem />
-      <CartItem />
+      <CartItem
+        product={{
+          id: 1,
+          name: "محصول تستی 1",
+          price: 45000,
+          image: "/image/image-in-main/founden/abolfazl.png",
+        }}
+      />
+
+      <CartItem
+        product={{
+          id: 2,
+          name: "محصول تستی 2",
+          price: 77000,
+          image: "/image/image-in-main/founden/abolfazl.png",
+        }}
+      />
 
       <div className="mt-8 max-w-md mx-auto bg-gradient-to-br from-pink-50 via-red-100 to-pink-200 rounded-3xl shadow-2xl p-6 sm:p-8 border border-pink-300 text-gray-800">
         <h2 className="text-center text-2xl font-extrabold text-pink-700 mb-6 drop-shadow-md">
