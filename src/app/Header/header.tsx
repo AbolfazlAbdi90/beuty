@@ -17,36 +17,40 @@ export default function Header() {
       {/* ------------------ موبایل ------------------ */}
       <div className="md:hidden flex flex-col py-4">
         <div className="flex items-center justify-between w-full px-4">
-          {/* منو همبرگری سمت چپ */}
-          <Navbar />
+  {/* منو همبرگری سمت چپ */}
+  <Navbar />
 
-          {/* لوگو وسط + کارت کنار لوگو */}
-          <div className="flex-1 flex justify-center relative">
-            <Link href="/">
-              <Image
-                src="/image/logo-in-website/ChatGPT Image Sep 28, 2025, 05_03_22 AM.png"
-                alt="logo-in-website"
-                width={100}
-                height={100}
-                className="rounded-2xl mr-[-10px] h-[100px] w-[220px] "
-              />
-            </Link>
+  {/* لوگو وسط + کارت کنار لوگو */}
+  <div className="flex-1 flex justify-center relative">
+    <Link href="/">
+      <Image
+        src="/image/logo-in-website/ChatGPT Image Sep 28, 2025, 05_03_22 AM.png"
+        alt="logo-in-website"
+        width={100}
+        height={100}
+        className="rounded-2xl mr-[-10px] h-[100px] w-[120px]"
+      />
+    </Link>
 
-            {/* سبد خرید در موبایل (کنار لوگو سمت چپ) */}
-                {/* تعداد سبد خرید */}
-            <div className="flex justify-end" >
-              <span className=" bg-red-500 mr-[0] w-[40px] px-3.75 py-2 h-[40px] text-white  rounded-full">
-              {handleTotalyQty}
-            </span>
-            </div>
-            <Link
-              href="/Cart"
-              className="absolute left-[0px] top-1/2 -translate-y-1/2 bg-[#EC6880] text-white py-5 px-5 rounded-full shadow-md flex items-center justify-center"
-            >
-              <FiShoppingCart size={22} />
-            </Link>
-          </div>
-        </div>
+    {/* آیکون سبد خرید */}
+    <Link
+      href="/Cart"
+      className="absolute left-0 top-1/2  -translate-y-1/2 bg-[#EC6880] text-white rounded-full shadow-md flex items-center justify-center
+                 p-5 sm:p-4 md:p-5"
+      style={{ minWidth: '40px', minHeight: '40px' }}
+    >
+      <FiShoppingCart
+        className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7"
+      />
+
+      {/* badge تعداد روی آیکون */}
+      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs sm:text-sm w-6 h-6 flex items-center justify-center rounded-full font-semibold">
+        {handleTotalyQty}
+      </span>
+    </Link>
+  </div>
+</div>
+
 
         {/* سرچ زیر لوگو */}
         <div className="w-full mt-4 px-4">
