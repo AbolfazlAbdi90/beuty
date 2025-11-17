@@ -28,7 +28,7 @@ export default function Header() {
         alt="logo-in-website"
         width={100}
         height={100}
-        className="rounded-2xl mr-[-10px] h-[100px] w-[120px]"
+        className="rounded-2xl mr-[-30px] h-[100px] w-[120px]"
       />
     </Link>
     
