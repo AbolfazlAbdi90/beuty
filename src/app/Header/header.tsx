@@ -31,6 +31,7 @@ export default function Header() {
         className="rounded-2xl mr-[-10px] h-[100px] w-[120px]"
       />
     </Link>
+    
 
     {/* آیکون سبد خرید */}
     <Link
