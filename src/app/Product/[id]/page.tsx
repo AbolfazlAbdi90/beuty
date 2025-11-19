@@ -8,7 +8,7 @@ import Cart from "@/app/component/addcart";
 import ProductList from "../ProductList";
 import Reviews from "@/app/component/ProductReviews";
 
-interface IProduct {
+export interface IProduct {
   id: number;
   name: string;
   image: string;

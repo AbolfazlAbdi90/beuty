@@ -15,6 +15,7 @@ interface IUseCartContext {
   HandleCount: (id: number) => number;
   handleTotalyQty: number;
   handleDecrease: (id: number) => void;
+  handleRemove:(id: number) => void
 }
 const CartContext = createContext({} as IUseCartContext);
 
@@ -49,6 +50,12 @@ export function CartContextProvider({ children }: CartContextProviderProps) {
       }
     });
   };
+
+  const handleRemove = (id:number)=>{
+    return setCartItems((cartItems)=>{
+      return cartItems.filter(item=>item.id !=id )
+    })
+  }
   const handleDecrease = (id: number) => {
     setCartItems((cartItems) => {
       let isLastOne = cartItems.find((item) => item.id == id)?.qty == 1;
@@ -69,7 +76,7 @@ export function CartContextProvider({ children }: CartContextProviderProps) {
   };
   return (
     <CartContext.Provider
-      value={{ cartItems, handleIncrease, HandleCount, handleTotalyQty,handleDecrease }}
+      value={{ cartItems, handleIncrease, HandleCount, handleTotalyQty,handleDecrease,handleRemove }}
     >
       {children}
     </CartContext.Provider>

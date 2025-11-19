@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ProductCard from "./ProductCard";
 
-interface ProductType {
+ export interface ProductType {
   id: number;
   name: string;
   image: string;
