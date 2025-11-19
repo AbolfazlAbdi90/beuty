@@ -7,10 +7,10 @@ import { FaInstagram, FaTelegramPlane } from "react-icons/fa";
 export default function Footer() {
   const Navbar = [
     { title: "صفحه اصلی", href: "/" },
-    { title: "فروشگاه", href: "/product" },
+    { title: "فروشگاه", href: "/Product" },
     { title: "مجله", href: "/articls" },
-    { title: "درباره ما", href: "/aboutUs" },
-    { title: "تماس با ما", href: "/contactUs" },
+    { title: "درباره ما", href: "/About" },
+    { title: "تماس با ما", href: "/ContactUs" },
   ];
 
   return (
