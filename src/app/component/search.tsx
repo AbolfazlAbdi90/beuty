@@ -19,7 +19,6 @@ export default function Search() {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  // بارگذاری محصولات و سرچ‌های اخیر از لوکال استوریج فقط یک بار
   useEffect(() => {
     fetch("/api/productList")
       .then((res) => res.json())
@@ -32,7 +31,6 @@ export default function Search() {
     if (saved) setRecentSearches(JSON.parse(saved));
   }, []);
 
-  // هر بار query تغییر کرد، فیلتر انجام میشه
   useEffect(() => {
     if (!query.trim()) {
       setFilteredSuggestions([]);
@@ -44,7 +42,6 @@ export default function Search() {
     setFilteredSuggestions(filtered);
   }, [query, products]);
 
-  // ذخیره سرچ اخیر
   const saveRecentSearch = (search: string) => {
     if (!search.trim()) return;
     setRecentSearches((prev) => {
@@ -55,8 +52,6 @@ export default function Search() {
     });
   };
 
-  // وقتی روی یکی از پیشنهادات کلیک شد
-  // فقط سرچ اخیر رو ذخیره می‌کنیم، هدایت از طریق لینک انجام میشه
   const handleSelectSuggestion = (product: Product) => {
     saveRecentSearch(product.name);
     setQuery("");
@@ -64,13 +59,15 @@ export default function Search() {
     setShowDropdown(false);
   };
 
-  // وقتی روی یکی از سرچ‌های اخیر کلیک شد
+  const handeleDelete = () => {
+    setQuery("");
+  };
+
   const handleSelectRecent = (item: string) => {
     setQuery(item);
     setShowDropdown(false);
   };
 
-  // حذف سرچ اخیر
   const handleRemoveRecent = (item: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setRecentSearches((prev) => {
@@ -89,7 +86,6 @@ export default function Search() {
     setShowDropdown(true);
   };
 
-  // وقتی input blur میشه، با تاخیر dropdown رو می‌بندیم تا کلیک روی گزینه‌ها ثبت بشه
   const handleBlur = () => {
     setTimeout(() => setShowDropdown(false), 150);
   };
@@ -106,14 +102,27 @@ export default function Search() {
         onBlur={handleBlur}
         autoComplete="off"
       />
+      
+      {/* آیکون جستجو سمت چپ */}
       <FiSearch
         className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
         size={20}
       />
+      
+      {/* دکمه حذف (ضربدر) سمت راست داخل input */}
+      {query && (
+        <button
+          onClick={handeleDelete}
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-800"
+          aria-label="پاک کردن متن جستجو"
+          type="button"
+        >
+          <FiX size={20} />
+        </button>
+      )}
 
       {showDropdown && (
         <>
-          {/* وقتی query خالیه، فقط سرچ‌های اخیر */}
           {!query.trim() && recentSearches.length > 0 && (
             <ul className="absolute z-30 bg-white w-full rounded-b-2xl max-h-60 overflow-y-auto shadow-lg text-black top-full mt-1">
               {recentSearches.map((item) => (
@@ -135,7 +144,6 @@ export default function Search() {
             </ul>
           )}
 
-          {/* وقتی query داریم، سرچ‌های اخیر و زیرش پیشنهادات */}
           {query.trim() && (
             <>
               {recentSearches.length > 0 && (
@@ -162,7 +170,7 @@ export default function Search() {
               {filteredSuggestions.length > 0 ? (
                 <ul className="absolute z-20 bg-white w-full rounded-b-2xl max-h-60 overflow-y-auto shadow-lg text-black top-full mt-[50px]">
                   {filteredSuggestions.map((product) => (
-                    <li key={product.id} className="px-4 py-2 hover:bg-pink-200">
+                    <li key={product.id} onClick={()=>handleSelectSuggestion(product)} className="px-4 py-2 hover:bg-pink-200">
                       <Link
                         href={`/Product/${product.id}`}
                         onClick={() => saveRecentSearch(product.name)}
@@ -174,7 +182,7 @@ export default function Search() {
                   ))}
                 </ul>
               ) : (
-                <div className="absolute z-10 bg-white w-full rounded-b-2xl max-h-60 overflow-y-auto shadow-lg text-black px-4 py-2 top-full mt-[calc(1.5rem*10+0.25rem)]">
+                <div className="absolute z-10 text-center bg-red-500 text-white  w-full rounded-2xl max-h-60 overflow-y-auto shadow-lg mr-15 px-4 py-2 top-full mt-4">
                   موردی یافت نشد
                 </div>
               )}
