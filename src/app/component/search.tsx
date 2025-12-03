@@ -17,9 +17,9 @@ export default function Search() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredSuggestions, setFilteredSuggestions] = useState<Product[]>([]);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const [showRecent, setShowRecent] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
 
-  // بارگذاری همه محصولات فقط یک بار در ابتدا
+  // بارگذاری محصولات و سرچ‌های اخیر از لوکال استوریج فقط یک بار
   useEffect(() => {
     fetch("/api/productList")
       .then((res) => res.json())
@@ -32,7 +32,19 @@ export default function Search() {
     if (saved) setRecentSearches(JSON.parse(saved));
   }, []);
 
-  // ذخیره سرچ‌های اخیر در لوکال استوریج
+  // هر بار query تغییر کرد، فیلتر انجام میشه
+  useEffect(() => {
+    if (!query.trim()) {
+      setFilteredSuggestions([]);
+      return;
+    }
+    const filtered = products.filter((p) =>
+      p.name.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredSuggestions(filtered);
+  }, [query, products]);
+
+  // ذخیره سرچ اخیر
   const saveRecentSearch = (search: string) => {
     if (!search.trim()) return;
     setRecentSearches((prev) => {
@@ -43,38 +55,22 @@ export default function Search() {
     });
   };
 
-  // فیلتر کردن پیشنهادات بر اساس query
-  useEffect(() => {
-    if (!query) {
-      setFilteredSuggestions([]);
-      return;
-    }
-    const filtered = products.filter((p) =>
-      p.name.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredSuggestions(filtered);
-  }, [query, products]);
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
-  };
-
+  // وقتی روی یکی از پیشنهادات کلیک شد
+  // فقط سرچ اخیر رو ذخیره می‌کنیم، هدایت از طریق لینک انجام میشه
   const handleSelectSuggestion = (product: Product) => {
     saveRecentSearch(product.name);
     setQuery("");
     setFilteredSuggestions([]);
-    setShowRecent(false);
+    setShowDropdown(false);
   };
 
+  // وقتی روی یکی از سرچ‌های اخیر کلیک شد
   const handleSelectRecent = (item: string) => {
     setQuery(item);
-    setShowRecent(false);
+    setShowDropdown(false);
   };
 
-  const handleFocus = (e: FocusEvent<HTMLInputElement>) => {
-    if (recentSearches.length > 0) setShowRecent(true);
-  };
-
+  // حذف سرچ اخیر
   const handleRemoveRecent = (item: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setRecentSearches((prev) => {
@@ -84,10 +80,18 @@ export default function Search() {
     });
   };
 
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+    if (!showDropdown) setShowDropdown(true);
+  };
+
+  const handleFocus = (e: FocusEvent<HTMLInputElement>) => {
+    setShowDropdown(true);
+  };
+
+  // وقتی input blur میشه، با تاخیر dropdown رو می‌بندیم تا کلیک روی گزینه‌ها ثبت بشه
   const handleBlur = () => {
-    setTimeout(() => {
-      setShowRecent(false);
-    }, 150);
+    setTimeout(() => setShowDropdown(false), 150);
   };
 
   return (
@@ -107,73 +111,76 @@ export default function Search() {
         size={20}
       />
 
-      {/* فقط وقتی query خالیه و سرچ‌های اخیر داریم */}
-      {!query && recentSearches.length > 0 && showRecent && (
-        <ul className="absolute z-30 bg-white w-full rounded-t-2xl max-h-60 overflow-y-auto shadow-lg text-black top-full mt-1">
-          {recentSearches.map((item) => (
-            <li
-              key={item}
-              className="cursor-pointer flex justify-between items-center px-4 py-2 hover:bg-pink-200"
-              onClick={() => handleSelectRecent(item)}
-            >
-              <span>{item}</span>
-              <button
-                onClick={(e) => handleRemoveRecent(item, e)}
-                className="text-red-500 hover:text-red-700"
-                aria-label={`حذف ${item} از جستجوهای اخیر`}
-              >
-                <FiX />
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {/* وقتی query داریم و سرچ‌های اخیر داریم */}
-      {query && recentSearches.length > 0 && showRecent && (
+      {showDropdown && (
         <>
-          {/* سرچ‌های اخیر */}
-          <ul className="absolute z-30 bg-white w-full rounded-t-2xl max-h-60 overflow-y-auto shadow-lg text-black top-full mt-1">
-            {recentSearches.map((item) => (
-              <li
-                key={item}
-                className="cursor-pointer flex justify-between items-center px-4 py-2 hover:bg-pink-200"
-                onClick={() => handleSelectRecent(item)}
-              >
-                <span>{item}</span>
-                <button
-                  onClick={(e) => handleRemoveRecent(item, e)}
-                  className="text-red-500 hover:text-red-700"
-                  aria-label={`حذف ${item} از جستجوهای اخیر`}
-                >
-                  <FiX />
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          {/* پیشنهادات جستجو */}
-          {filteredSuggestions.length > 0 && (
-            <ul className="absolute z-20 bg-white w-full rounded-b-2xl max-h-60 overflow-y-auto shadow-lg text-black top-full mt-[calc(1.5rem*10+0.25rem)]">
-              {filteredSuggestions.map((product) => (
+          {/* وقتی query خالیه، فقط سرچ‌های اخیر */}
+          {!query.trim() && recentSearches.length > 0 && (
+            <ul className="absolute z-30 bg-white w-full rounded-b-2xl max-h-60 overflow-y-auto shadow-lg text-black top-full mt-1">
+              {recentSearches.map((item) => (
                 <li
-                  key={product.id}
-                  className="cursor-pointer px-4 py-2 hover:bg-pink-200"
-                  onClick={() => handleSelectSuggestion(product)}
+                  key={item}
+                  className="cursor-pointer flex justify-between items-center px-4 py-2 hover:bg-pink-200"
+                  onClick={() => handleSelectRecent(item)}
                 >
-                  <Link href={`/Product/${product.id}`}>{product.name}</Link>
+                  <span>{item}</span>
+                  <button
+                    onClick={(e) => handleRemoveRecent(item, e)}
+                    className="text-red-500 hover:text-red-700"
+                    aria-label={`حذف ${item} از جستجوهای اخیر`}
+                  >
+                    <FiX />
+                  </button>
                 </li>
               ))}
             </ul>
           )}
-        </>
-      )}
 
-      {/* وقتی query داریم ولی هیچ پیشنهادی نیست */}
-      {query && filteredSuggestions.length === 0 && (
-        <div className="absolute z-10 bg-white w-full rounded-b-2xl max-h-60 overflow-y-auto shadow-lg text-black px-4 py-2 top-full mt-1">
-          موردی یافت نشد
-        </div>
+          {/* وقتی query داریم، سرچ‌های اخیر و زیرش پیشنهادات */}
+          {query.trim() && (
+            <>
+              {recentSearches.length > 0 && (
+                <ul className="absolute z-30 bg-white w-full rounded-t-2xl max-h-60 overflow-y-auto shadow-lg text-black top-full mt-1">
+                  {recentSearches.map((item) => (
+                    <li
+                      key={item}
+                      className="cursor-pointer flex justify-between items-center px-4 py-2 hover:bg-pink-200"
+                      onClick={() => handleSelectRecent(item)}
+                    >
+                      <span>{item}</span>
+                      <button
+                        onClick={(e) => handleRemoveRecent(item, e)}
+                        className="text-red-500 hover:text-red-700"
+                        aria-label={`حذف ${item} از جستجوهای اخیر`}
+                      >
+                        <FiX />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {filteredSuggestions.length > 0 ? (
+                <ul className="absolute z-20 bg-white w-full rounded-b-2xl max-h-60 overflow-y-auto shadow-lg text-black top-full mt-[50px]">
+                  {filteredSuggestions.map((product) => (
+                    <li key={product.id} className="px-4 py-2 hover:bg-pink-200">
+                      <Link
+                        href={`/Product/${product.id}`}
+                        onClick={() => saveRecentSearch(product.name)}
+                        className="block w-full"
+                      >
+                        {product.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="absolute z-10 bg-white w-full rounded-b-2xl max-h-60 overflow-y-auto shadow-lg text-black px-4 py-2 top-full mt-[calc(1.5rem*10+0.25rem)]">
+                  موردی یافت نشد
+                </div>
+              )}
+            </>
+          )}
+        </>
       )}
     </div>
   );
