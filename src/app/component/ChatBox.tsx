@@ -18,7 +18,7 @@ import {
 
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { X, Paperclip } from "lucide-react";
-import VoiceRecorder from "./VoiceRecorder";
+
 
 interface ChatBoxProps {
   onClose: () => void;

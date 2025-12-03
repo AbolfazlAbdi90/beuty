@@ -38,6 +38,7 @@ export default function Home() {
         {/* logo for main beard */}
         <Main />
         <ChatWidget />
+       
       </div>
     </Container>
   );
