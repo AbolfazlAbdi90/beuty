@@ -15,7 +15,7 @@ export default function Footer() {
 
   return (
     <Container>
-      <div className="w-full text-white md:h-[400px] bg-[#30303D] mx-auto rounded-t-[32px] flex flex-col items-center py-8 gap-4">
+      <div className="w-full text-white md:h-[400px] bg-[#30303D]  mx-auto rounded-t-[32px] flex flex-col items-center py-8 gap-4">
         {/* بخش لوگو و توضیح */}
         <div className="text-center">
           <div className="flex justify-center" >
@@ -77,7 +77,7 @@ export default function Footer() {
       </div>
 
       {/* نوار پایین صورتی */}
-      <div className="bg-[#FF6687] h-[94px] w-full rounded-b-[32px]">
+      <div className="bg-[#FF6687] h-[94px] w-full mb-[-30px] rounded-b-[32px]">
         <div className="grid grid-cols-1 md:flex md:flex-row-reverse md:justify-between items-center px-8 h-full">
           {/* آیکون‌ها */}
           <div className="flex justify-center md:justify-start gap-1">
