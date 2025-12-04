@@ -182,7 +182,7 @@ export default function Search() {
                   ))}
                 </ul>
               ) : (
-                <div className="absolute z-10 text-center bg-red-500 text-white  w-full rounded-2xl max-h-60 overflow-y-auto shadow-lg mr-15 px-4 py-2 top-full mt-4">
+                <div className="absolute z-10 text-center bg-red-500 text-white  w-full rounded-2xl max-h-60 overflow-y-auto shadow-lg md:mr-15 px-4 py-2 top-full mt-2">
                   موردی یافت نشد
                 </div>
               )}
